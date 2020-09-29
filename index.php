@@ -46,6 +46,7 @@ require_once FLUX_CONFIG_DIR.'/groups.php';
 require_once 'Flux.php';
 require_once 'Flux/Dispatcher.php';
 require_once 'Flux/SessionData.php';
+//require_once 'Flux/MasterAccount/SessionData.php';
 require_once 'Flux/DataObject.php';
 require_once 'Flux/Authorization.php';
 require_once 'Flux/Installer.php';
@@ -145,7 +146,10 @@ try {
 	}
 
 	// Initialize session data.
-	Flux::$sessionData = new Flux_SessionData($_SESSION[$sessionKey], $hasUpdates);
+	Flux::$sessionData =
+//		Flux::config('MasterAccount') ?
+//		new Flux_MasterSessionData($_SESSION[$sessionKey], $hasUpdates) :
+		new Flux_SessionData($_SESSION[$sessionKey], $hasUpdates);
 
 	// Initialize authorization component.
 	$accessConfig = Flux::parseConfigFile(FLUX_CONFIG_DIR.'/access.php');

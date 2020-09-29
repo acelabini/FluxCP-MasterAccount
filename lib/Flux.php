@@ -3,6 +3,7 @@ require_once 'Flux/Config.php';
 require_once 'Flux/Error.php';
 require_once 'Flux/Connection.php';
 require_once 'Flux/LoginServer.php';
+//require_once 'Flux/MasterAccount/LoginServer.php';
 require_once 'Flux/CharServer.php';
 require_once 'Flux/MapServer.php';
 require_once 'Flux/Athena.php';
@@ -142,7 +143,10 @@ class Flux {
 	{
 		foreach (self::$serversConfig->getChildrenConfigs() as $key => $config) {
 			$connection  = new Flux_Connection($config->getDbConfig(), $config->getLogsDbConfig());
-			$loginServer = new Flux_LoginServer($config->getLoginServer());
+			$loginServer =
+//				Flux::config('MasterAccount') ? new Flux_MasterLoginServer($config->getLoginServer())
+//				:
+				new Flux_LoginServer($config->getLoginServer());
 			
 			// LoginAthenaGroup maintains the grouping of a central login
 			// server and its underlying Athena objects.
@@ -553,7 +557,7 @@ class Flux {
 	public static function getServerGroupByName($serverName)
 	{
 		$registry = &self::$loginAthenaGroupRegistry;
-		
+
 		if (array_key_exists($serverName, $registry) && $registry[$serverName] instanceOf Flux_LoginAthenaGroup) {
 			return $registry[$serverName];
 		}
@@ -587,13 +591,22 @@ class Flux {
 	 * Hashes a password for use in comparison with the login.user_pass column.
 	 *
 	 * @param string $password Plain text password.
+	 * @param string $algorithm Algorithm for hashing password
 	 * @return string Returns hashed password.
 	 * @access public
 	 */
-	public static function hashPassword($password)
+	public static function hashPassword($password, $algorithm = null)
 	{
-		// Default hashing schema is MD5.
-		return md5($password);
+		switch ($algorithm) {
+			case 'bcrypt':
+				$password = password_hash($password, PASSWORD_BCRYPT);
+				break;
+			default:
+				// Default hashing schema is MD5.
+				$password = md5($password);
+				break;
+		}
+		return $password;
 	}
 	
 	/**

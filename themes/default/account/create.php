@@ -18,7 +18,7 @@
 <p><strong>Note:</strong> <?php echo sprintf(Flux::message('PasswordNeedSymbol'), Flux::config('PasswordMinSymbol')) ?></p>
 <?php endif ?>
 <?php if (!Flux::config('AllowUserInPassword')): ?>
-<p><strong>Note:</strong> <?php echo Flux::message('PasswordContainsUser') ?></p>
+<p><strong>Note:</strong> <?php echo Flux::message(Flux::config('MasterAccount') ? 'PasswordContainsEmail' : 'PasswordContainsUser') ?></p>
 <?php endif ?>
 <?php if (isset($errorMessage)): ?>
 <p class="red" style="font-weight: bold"><?php echo htmlspecialchars($errorMessage) ?></p>
@@ -40,12 +40,19 @@
 			</td>
 		</tr>
 		<?php endif ?>
-		
-		<tr>
-			<th><label for="register_username"><?php echo htmlspecialchars(Flux::message('AccountUsernameLabel')) ?></label></th>
-			<td><input type="text" name="username" id="register_username" value="<?php echo htmlspecialchars($params->get('username')) ?>" /></td>
-		</tr>
-		
+
+        <?php if (!Flux::config('MasterAccount')): ?>
+            <tr>
+                <th><label for="register_username"><?php echo htmlspecialchars(Flux::message('AccountUsernameLabel')) ?></label></th>
+                <td><input type="text" name="username" id="register_username" value="<?php echo htmlspecialchars($params->get('username')) ?>" /></td>
+            </tr>
+        <?php else: ?>
+            <tr>
+                <th><label for="register_name"><?php echo htmlspecialchars(Flux::message('AccountNameLabel')) ?></label></th>
+                <td><input type="text" name="name" id="register_name" value="<?php echo htmlspecialchars($params->get('name')) ?>" /></td>
+            </tr>
+		<?php endif; ?>
+
 		<tr>
 			<th><label for="register_password"><?php echo htmlspecialchars(Flux::message('AccountPasswordLabel')) ?></label></th>
 			<td><input type="password" name="password" id="register_password" /></td>
@@ -60,12 +67,15 @@
 			<th><label for="register_email_address"><?php echo htmlspecialchars(Flux::message('AccountEmailLabel')) ?></label></th>
 			<td><input type="text" name="email_address" id="register_email_address" value="<?php echo htmlspecialchars($params->get('email_address')) ?>" /></td>
 		</tr>
-		
+
+        <?php if (!Flux::config('MasterAccount')): ?>
 		<tr>
 			<th><label for="register_email_address"><?php echo htmlspecialchars(Flux::message('AccountEmailLabel2')) ?></label></th>
 			<td><input type="text" name="email_address2" id="register_email_address2" value="<?php echo htmlspecialchars($params->get('email_address2')) ?>" /></td>
 		</tr>
-		
+		<?php endif; ?>
+
+        <?php if (!Flux::config('MasterAccount')): ?>
 		<tr>
 			<th><label><?php echo htmlspecialchars(Flux::message('AccountGenderLabel')) ?></label></th>
 			<td>
@@ -76,7 +86,8 @@
 				</p>
 			</td>
 		</tr>
-		
+		<?php endif; ?>
+
 		<tr>
 			<th><label><?php echo htmlspecialchars(Flux::message('AccountBirthdateLabel')) ?></label></th>
 			<td><?php echo $this->dateField('birthdate',null,0) ?></td>
