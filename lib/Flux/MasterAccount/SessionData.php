@@ -16,6 +16,12 @@ class Flux_MasterSessionData extends Flux_SessionData {
     public function __construct(array &$sessionData, $logout = false)
     {
         parent::__construct($sessionData, $logout);
+        if ($logout) {
+            $this->logout();
+        }
+        else {
+            $this->initialize();
+        }
     }
 
     /**
@@ -50,7 +56,6 @@ class Flux_MasterSessionData extends Flux_SessionData {
                 $this->setServerNameData($defaultServerName);
             }
         }
-
 
         if ($this->serverName && ($this->loginAthenaGroup = Flux::getServerGroupByName($this->serverName))) {
             $this->loginServer = $this->loginAthenaGroup->loginServer;

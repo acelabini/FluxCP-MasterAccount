@@ -117,13 +117,8 @@ class Flux_SessionData {
 			$this->account->group_level = AccountLevel::getGroupLevel($account->group_id);
 
 			// Automatically log out of account when detected as banned.
-			$permBan = null;
-			if (Flux::config('MasterAccount')) {
-				$tempBan = (($account->unban_date && $account->unban_date < new DateTime()) && !Flux::config('AllowTempBanLogin'));
-			} else {
-				$permBan = ($account->state == 5 && !Flux::config('AllowPermBanLogin'));
-				$tempBan = (($account->unban_time > 0 && $account->unban_time < time()) && !Flux::config('AllowTempBanLogin'));
-			}
+			$permBan = ($account->state == 5 && !Flux::config('AllowPermBanLogin'));
+			$tempBan = (($account->unban_time > 0 && $account->unban_time < time()) && !Flux::config('AllowTempBanLogin'));
 
 			if ($permBan || $tempBan) {
 				$this->logout();
