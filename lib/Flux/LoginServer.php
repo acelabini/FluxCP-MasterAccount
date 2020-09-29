@@ -70,10 +70,6 @@ class Flux_LoginServer extends Flux_BaseServer {
 			return false;
 		}
 
-		if (Flux::config('MasterAccount')) {
-			return $this->masterAuth($username, $password);
-		}
-
 		if ($this->config->get('UseMD5')) {
 			$password = Flux::hashPassword($password);
 		}
@@ -96,27 +92,6 @@ class Flux_LoginServer extends Flux_BaseServer {
 		else {
 			return false;
 		}
-	}
-
-	/**
-	 * Validate credentials of the master account.
-	 *
-	 * @param $email
-	 * @param $password
-	 * @return boolean
-	 */
-	private function masterAuth($email, $password)
-	{
-		if (!Flux::config('MasterAccount')) return false;
-
-		$usersTable = Flux::config('FluxTables.MasterUserTable');
-		$sql  = "SELECT id, password FROM {$this->loginDatabase}.{$usersTable} WHERE group_id >= 0 ";
-		$sql .= "AND LOWER(email) = LOWER(?) LIMIT 1";
-		$sth  = $this->connection->getStatement($sql);
-		$sth->execute(array($email));
-		$res = $sth->fetch();
-
-		return password_verify($password, $res->password);
 	}
 
 	/**

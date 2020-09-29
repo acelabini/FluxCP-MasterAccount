@@ -5,6 +5,7 @@ $serverGroupName = $params->get('server');
 $email = $params->get('email');
 $password = $params->get('password');
 $code     = $params->get('security_code');
+$usersTable = Flux::config('FluxTables.MasterUserTable');
 
 try {
     $session->login($serverGroupName, $email, $password, $code);
@@ -13,10 +14,10 @@ try {
     $password = Flux::hashPassword($password, Flux::config('MasterAccountPasswordHash'));
 
     $sql  = "INSERT INTO {$session->loginAthenaGroup->loginDatabase}.$loginLogTable ";
-    $sql .= "(account_id, username, password, ip, error_code, login_date) ";
+    $sql .= "(user_id, username, password, ip, error_code, login_date) ";
     $sql .= "VALUES (?, ?, ?, ?, ?, NOW())";
     $sth  = $session->loginAthenaGroup->connection->getStatement($sql);
-    $sth->execute(array($session->account->id, $username, $password, $_SERVER['REMOTE_ADDR'], null));
+    $res = $sth->execute(array($session->account->id, $email, $password, $_SERVER['REMOTE_ADDR'], null));
 
     if ($returnURL) {
         $this->redirect($returnURL);
@@ -26,34 +27,24 @@ try {
     }
 }
 catch (Flux_LoginError $e) {
-    if ($username && $password && $e->getCode() != Flux_LoginError::INVALID_SERVER) {
+    if ($email && $password && $e->getCode() != Flux_LoginError::INVALID_SERVER) {
         $loginAthenaGroup = Flux::getServerGroupByName($serverGroupName);
 
-        $sql = "SELECT account_id FROM {$loginAthenaGroup->loginDatabase}.login WHERE ";
+        $sql = "SELECT id, email FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} WHERE ";
 
-        if (!$loginAthenaGroup->loginServer->config->getNoCase()) {
-            $sql .= "CAST(userid AS BINARY) ";
-        } else {
-            $sql .= "userid ";
-        }
-
-        $sql .= "= ? LIMIT 1";
+        $sql .= "email = ? LIMIT 1";
         $sth = $loginAthenaGroup->connection->getStatement($sql);
-        $sth->execute(array($username));
+        $sth->execute(array($email));
         $row = $sth->fetch();
 
         if ($row) {
-            $accountID = $row->account_id;
-
-            if ($loginAthenaGroup->loginServer->config->getUseMD5()) {
-                $password = Flux::hashPassword($password);
-            }
+            $password = Flux::hashPassword($password, Flux::config('MasterAccountPasswordHash'));
 
             $sql  = "INSERT INTO {$loginAthenaGroup->loginDatabase}.$loginLogTable ";
-            $sql .= "(account_id, username, password, ip, error_code, login_date) ";
+            $sql .= "(user_id, username, password, ip, error_code, login_date) ";
             $sql .= "VALUES (?, ?, ?, ?, ?, NOW())";
             $sth  = $loginAthenaGroup->connection->getStatement($sql);
-            $sth->execute(array($accountID, $username, $password, $_SERVER['REMOTE_ADDR'], $e->getCode()));
+            $sth->execute(array($row->id, $email, $password, $_SERVER['REMOTE_ADDR'], $e->getCode()));
         }
     }
 

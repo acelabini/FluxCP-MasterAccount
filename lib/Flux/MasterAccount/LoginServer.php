@@ -27,6 +27,10 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
     {
         if (!Flux::config('MasterAccount')) return false;
 
+        if (trim($email) == '' || trim($password) == '') {
+            return false;
+        }
+
         $usersTable = Flux::config('FluxTables.MasterUserTable');
         $sql  = "SELECT id, password FROM {$this->loginDatabase}.{$usersTable} WHERE group_id >= 0 ";
         $sql .= "AND LOWER(email) = LOWER(?) LIMIT 1";

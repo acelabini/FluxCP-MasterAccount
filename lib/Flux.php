@@ -3,7 +3,7 @@ require_once 'Flux/Config.php';
 require_once 'Flux/Error.php';
 require_once 'Flux/Connection.php';
 require_once 'Flux/LoginServer.php';
-//require_once 'Flux/MasterAccount/LoginServer.php';
+require_once 'Flux/MasterAccount/LoginServer.php';
 require_once 'Flux/CharServer.php';
 require_once 'Flux/MapServer.php';
 require_once 'Flux/Athena.php';
@@ -143,10 +143,8 @@ class Flux {
 	{
 		foreach (self::$serversConfig->getChildrenConfigs() as $key => $config) {
 			$connection  = new Flux_Connection($config->getDbConfig(), $config->getLogsDbConfig());
-			$loginServer =
-//				Flux::config('MasterAccount') ? new Flux_MasterLoginServer($config->getLoginServer())
-//				:
-				new Flux_LoginServer($config->getLoginServer());
+			$loginServer = Flux::config('MasterAccount') ? new Flux_MasterLoginServer($config->getLoginServer())
+				: new Flux_LoginServer($config->getLoginServer());
 			
 			// LoginAthenaGroup maintains the grouping of a central login
 			// server and its underlying Athena objects.

@@ -15,7 +15,7 @@ try {
     }
 
     // Woohoo! Register ;)
-    $result = $server->loginServer->register($name, $password, $confirm, $birthdate, $code, $email);
+    $result = $server->loginServer->register($name, $password, $confirm, $birthdate, $code, $email, null, null);
 
     if ($result) {
         if (Flux::config('RequireEmailConfirm')) {
