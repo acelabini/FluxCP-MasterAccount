@@ -30,10 +30,11 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
         if (trim($email) == '' || trim($password) == '') {
             return false;
         }
-
         $usersTable = Flux::config('FluxTables.MasterUserTable');
-        $sql  = "SELECT id, password FROM {$this->loginDatabase}.{$usersTable} WHERE group_id >= 0 ";
-        $sql .= "AND LOWER(email) = LOWER(?) LIMIT 1";
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
+        $sql  = "SELECT {$userColumns->get('id')},{$userColumns->get('password')} FROM {$this->loginDatabase}.{$usersTable}";
+        $sql .= " WHERE {$userColumns->get('group_id')} >= 0 ";
+        $sql .= "AND LOWER({$userColumns->get('email')}) = LOWER(?) LIMIT 1";
         $sth  = $this->connection->getStatement($sql);
         $sth->execute(array($email));
         $res = $sth->fetch();
@@ -97,7 +98,8 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
         }
 
         $usersTable = Flux::config('FluxTables.MasterUserTable');
-        $sql  = "SELECT email FROM {$this->loginDatabase}.{$usersTable} WHERE LOWER(email) = LOWER(?) LIMIT 1";
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
+        $sql  = "SELECT {$userColumns->get('email')} FROM {$this->loginDatabase}.{$usersTable} WHERE LOWER({$userColumns->get('email')}) = LOWER(?) LIMIT 1";
         $sth  = $this->connection->getStatement($sql);
         $sth->execute(array($email));
 
@@ -107,10 +109,20 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
         }
 
         $password = Flux::hashPassword($password, Flux::config('MasterAccountPasswordHash'));
+        $withDates = !empty($userColumns->get('created_at')) && !empty($userColumns->get('updated_at'));
 
         $sql = "INSERT INTO {$this->loginDatabase}.{$usersTable} ";
-        $sql .= "(name, email, password, group_id, birth_date, last_ip, create_date, update_date) ";
-        $sql .= "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        $sql .= "({$userColumns->get('name')}, {$userColumns->get('email')}, {$userColumns->get('password')}, {$userColumns->get('group_id')},";
+        $sql .= "{$userColumns->get('birth_date')}, {$userColumns->get('last_ip')}";
+        if ($withDates) {
+            $sql .= ", {$userColumns->get('created_at')}, {$userColumns->get('updated_at')}";
+        }
+        $sql .= ") ";
+        $sql .= "VALUES (?, ?, ?, ?, ?, ?";
+        if ($withDates) {
+            $sql .= ", NOW(), NOW()";
+        }
+        $sql .=")";
         $sth = $this->connection->getStatement($sql);
         $res = $sth->execute(array(
             $name,
@@ -129,6 +141,31 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
         }
 
         return false;
+    }
+
+    public function createGameAccount($username, $password, $confirmPassword, $gender, $securityCode)
+    {
+        if (!($account = Flux::$sessionData->account)) {
+            return false;
+        }
+
+        $accountId = $this->registerGameAccount(
+            $account,
+            $username,
+            $password,
+            $confirmPassword,
+            $gender,
+            $securityCode
+        );
+
+        if (!$accountId) return false;
+
+        $userAccountTable = Flux::config('FluxTables.MasterUserAccountTable');
+        $sql = "INSERT INTO {$this->loginDatabase}.{$userAccountTable} ";
+        $sql .= "(user_id, account_id, create_date) VALUES (?, ?, NOW())";
+        $sth  = $this->connection->getStatement($sql);
+
+        return $sth->execute(array($account->id, $accountId));
     }
 
     /**
@@ -157,14 +194,15 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
     {
         $table = Flux::config('FluxTables.MasterUserBanTable');
         $usersTable = Flux::config('FluxTables.MasterUserTable');
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
 
         $sql  = "INSERT INTO {$this->loginDatabase}.$table (user_id, banned_by, ban_type, ban_until, ban_date, ban_reason) ";
         $sql .= "VALUES (?, ?, 2, '9999-12-31 23:59:59', NOW(), ?)";
         $sth  = $this->connection->getStatement($sql);
 
-        if ($sth->execute(array($userId, $bannedBy, $banReason))) {
-            $sql  = "UPDATE {$this->loginDatabase}.{$usersTable} SET unban_date = NOW() WHERE id = ?";
-            $sth  = $this->connection->getStatement($sql);
+        if ($sth->execute(array($userId, $bannedBy, $banReason)) && !empty($userColumns->get('unban_at'))) {
+            $sql = "UPDATE {$this->loginDatabase}.{$usersTable} SET {$userColumns->get('unban_at')} = NOW() WHERE id = ?";
+            $sth = $this->connection->getStatement($sql);
             return $sth->execute(array($userId));
         }
         else {
@@ -176,13 +214,18 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
     {
         $table = Flux::config('FluxTables.MasterUserBanTable');
         $usersTable = Flux::config('FluxTables.MasterUserTable');
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
 
         $sql  = "INSERT INTO {$this->loginDatabase}.{$table} (user_id, banned_by, ban_type, ban_until, ban_date, ban_reason) ";
         $sql .= "VALUES (?, ?, 0, '1000-01-01 00:00:00', NOW(), ?)";
         $sth  = $this->connection->getStatement($sql);
 
-        if ($sth->execute(array($userId, $unbannedBy, $unbanReason))) {
-            $sql  = "UPDATE {$this->loginDatabase}.{$usersTable} SET confirmed_date = NOW(), confirm_expire = NULL, unban_date = NULL WHERE id = ?";
+        if ($sth->execute(array($userId, $unbannedBy, $unbanReason)) && !empty($userColumns->get('unban_at'))) {
+            $sql  = "UPDATE {$this->loginDatabase}.{$usersTable} SET ";
+            if (!$unbannedBy) {
+                $sql .= "confirmed_date = NOW(), confirm_expire = NULL, ";
+            }
+            $sql .= "{$userColumns->get('unban_at')} = NULL WHERE id = ?";
             $sth  = $this->connection->getStatement($sql);
             $sth->execute(array($userId));
         }
@@ -208,6 +251,28 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
         if ($res) {
             $ban = $sth->fetchAll();
             return $ban;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getGameAccount($userId, $accountID)
+    {
+        $userAccountTable = Flux::config('FluxTables.MasterUserAccountTable');
+        $creditsTable  = Flux::config('FluxTables.CreditsTable');
+        $creditColumns = 'credits.balance, credits.last_donation_date, credits.last_donation_amount';
+
+        $sql  = "SELECT *, {$creditColumns}, login.account_id, login.userid, login.logincount, login.lastlogin, login.last_ip, login.sex";
+        $sql .= " FROM {$this->loginDatabase}.{$userAccountTable} AS ua";
+        $sql .= " JOIN {$this->loginDatabase}.login ON login.account_id = ua.account_id";
+        $sql .= " LEFT OUTER JOIN {$this->loginDatabase}.{$creditsTable} AS credits ON login.account_id = credits.account_id ";
+        $sql .= " WHERE ua.user_id = ? and login.account_id = ? ORDER BY ua.id ASC";
+        $sth  = $this->connection->getStatement($sql);
+        $res = $sth->execute(array($userId, $accountID));
+
+        if ($res) {
+            return $sth->fetch();
         }
         else {
             return false;

@@ -6,9 +6,14 @@ $this->loginRequired();
 $title = Flux::message('HistoryCpLoginTitle');
 $loginLogTable = Flux::config('FluxTables.LoginLogTable');
 
+if (Flux::config('MasterAccount')) {
+	$sqlpartial = "WHERE user_id = ?";
+	$bind = array($session->account->id);
+} else {
 // Partial SQL query.
-$sqlpartial = "WHERE account_id = ?";
-$bind       = array($session->account->account_id);
+	$sqlpartial = "WHERE account_id = ?";
+	$bind = array($session->account->account_id);
+}
 
 // Fetch record count.
 $sql = "SELECT COUNT(id) AS total FROM {$server->loginDatabase}.$loginLogTable $sqlpartial";

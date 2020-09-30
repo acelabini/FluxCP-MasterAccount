@@ -3,7 +3,7 @@
 <?php if ($cost): ?>
 <p>
 	<?php printf(Flux::message('GenderChangeCost'), '<span class="remaining-balance">'.number_format((int)$cost).'</span>') ?>
-	<?php printf(Flux::message('GenderChangeBalance'), '<span class="remaining-balance">'.number_format((int)$session->account->balance).'</span>') ?>
+	<?php printf(Flux::message('GenderChangeBalance'), '<span class="remaining-balance">'.number_format((int)$account->balance).'</span>') ?>
 </p>
 <?php if (!$hasNecessaryFunds): ?>
 <p><?php echo htmlspecialchars(Flux::message('GenderChangeNoFunds')) ?></p>
@@ -25,7 +25,7 @@
 		<tr>
 			<td>
 				<p>
-					<?php printf(Flux::message('GenderChangeFormText'), '<strong>'.strtolower($this->genderText($session->account->sex == 'M' ? 'F' : 'M')).'</strong>') ?>
+					<?php printf(Flux::message('GenderChangeFormText'), '<strong>'.strtolower($this->genderText($account->sex == 'M' ? 'F' : 'M')).'</strong>') ?>
 				</p>
 			</td>
 		</tr>

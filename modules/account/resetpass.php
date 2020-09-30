@@ -6,6 +6,10 @@ $title = Flux::message('ResetPassTitle');
 $serverNames    = $this->getServerNames();
 $resetPassTable = Flux::config('FluxTables.ResetPasswordTable');
 
+if (!$params->get('id') && Flux::config('MasterAccount')) {
+	$this->redirect();
+}
+
 if (count($_POST)) {
 	$userid    = $params->get('userid');
 	$email     = $params->get('email');

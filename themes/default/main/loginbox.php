@@ -1,5 +1,12 @@
-<?php if (!defined('FLUX_ROOT')) exit; ?>
-<?php if ($session->isLoggedIn()): ?>
+<?php if (!defined('FLUX_ROOT')) exit;
+if ($session->isLoggedIn()):
+    $loggedInAs = $session->account->userid;
+    if (Flux::config('MasterAccount')) {
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
+        $name = $userColumns->get('name');
+        $loggedInAs = $session->account->$name ?: $session->account->userid;
+    }
+?>
 <table cellspacing="0" cellpadding="0" width="100%" id="loginbox">
 	<tr>
 		<td width="18"><img src="<?php echo $this->themePath('img/loginbox_tl.gif') ?>" style="display: block" /></td>
@@ -13,7 +20,8 @@
 				You are currently logged in as
                 <strong>
                     <a href="<?php echo $this->url('account', 'view') ?>" title="View account">
-                        <?php echo htmlspecialchars(Flux::config('MasterAccount') ? $session->account->name : $session->account->userid) ?>
+                        <?php echo htmlspecialchars($loggedInAs)
+                        ?>
                     </a>
                 </strong>
 				on <?php echo htmlspecialchars($session->serverName) ?>.

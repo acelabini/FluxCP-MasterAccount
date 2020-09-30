@@ -13,6 +13,10 @@ if (!$login || !$account || !$code || strlen($code) !== 32) {
 	$this->deny();
 }
 
+if (!$params->get('id') && Flux::config('MasterAccount')) {
+	$this->redirect();
+}
+
 $loginAthenaGroup = Flux::getServerGroupByName($login);
 if (!$loginAthenaGroup) {
 	$this->deny();

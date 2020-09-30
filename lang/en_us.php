@@ -125,7 +125,6 @@ return array(
 	'OldPasswordInvalid'      => "The password you provided doesn't match the one we have on record.",
 	'ConfirmNewPassword'      => 'Please confirm your new password.',
 	'NewPasswordHasUsername'  => 'Your new password must not contain your username.',
-	'NewPasswordHasName'      => 'Your new password must not contain your name.',
 	'NewPasswordInvalid'      => 'Your new password contains invalid characters.',
 	'NewPasswordSameAsOld'    => 'New password cannot be the same as your current password.',
 	'NewPasswordNeedUpper'    => 'Your new password must contain at least %d uppercase letter(s).',
@@ -177,7 +176,6 @@ return array(
 	'AccountCreateInfo2'      => 'By clicking "Create My Account", you agree to be bound by our %s.',
 	'AccountCreateGenderInfo' => "The gender you choose here will affect your in-game character's gender!",
 	'AccountServerLabel'      => 'Server',
-	'AccountNameLabel'        => 'Your Name',
 	'AccountUsernameLabel'    => 'Your Username',
 	'AccountPasswordLabel'    => 'Your Password',
 	'AccountPassConfirmLabel' => 'Confirm Password',
@@ -188,7 +186,6 @@ return array(
 	'AccountSecurityLabel'    => 'Security Code',
 	'AccountCreateButton'     => 'Create My Account',
 	'AccountInvalidChars'     => "A username can only contain these characters: '%s'",
-	'AccountNameInvalidChars' => "Account name can only contain letters",
 	'InvalidLoginServer'      => 'Invalid login server selected, please try again with a valid server.',
 	'InvalidLoginCredentials' => 'Invalid login credentials, please verify that you typed the correct info and try again.',
 	'UnexpectedLoginError'    => 'Unexpected error occurred, please try again or report to an admin.',
@@ -197,7 +194,6 @@ return array(
 	'UsernameTooShort'        => sprintf('Your username should be around %d to %d characters long.', Flux::config('MinUsernameLength'), Flux::config('MaxUsernameLength')),
 	'UsernameTooLong'         => sprintf('Your username should be around %d to %d characters long.', Flux::config('MinUsernameLength'), Flux::config('MaxUsernameLength')),
 	'PasswordContainsUser'    => 'Your password cannot contain your username.',
-	'PasswordContainsEmail'   => 'Your password cannot contain your email.',
 	'PasswordHasUsername'     => 'Your password must not contain your username.',
 	'PasswordTooShort'        => 'Your password should be around %d to %d characters long.',
 	'PasswordTooLong'         => 'Your password should be around %d to %d characters long.',
@@ -840,5 +836,17 @@ return array(
 	// Module: webcommands
 	'WCTitleLabel'			=> 'Web Commands',
 
+	// Master Account
+	'MasterAccountLabel'			 => 'Master Account',
+	'GameAccountLabel'			 	 => 'Game Accounts',
+	'MasterAccountViewHeading'      => 'Viewing Master Account',
+	'GameAccountsViewHeading'       => 'Viewing Game Accounts',
+	'MasterAccountViewSubHead'      => 'Game Accounts on %s',
+	'CreateGameAccountLabel'		 => 'Create Game Account',
+	'NewPasswordHasName'      		 => 'Your new password must not contain your name.',
+	'AccountNameLabel'        		 => 'Your Name',
+	'AccountNameInvalidChars' 		 => "Account name can only contain letters",
+	'PasswordContainsEmail'   		 => 'Your password cannot contain your email.',
+	'MasterGameAccountCreated'      => 'Account successfully created.',
 );
 ?>

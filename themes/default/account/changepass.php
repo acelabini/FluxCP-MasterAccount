@@ -12,8 +12,10 @@
 			<th><label for="currentpass"><?php echo htmlspecialchars(Flux::message('CurrentPasswordLabel')) ?></label></th>
 			<td><input type="password" name="currentpass" id="currentpass" value="" /></td>
 			<td rowspan="3">
+                <?php if (!Flux::config('MasterAccount')): ?>
 				<p><?php echo htmlspecialchars(Flux::message('PasswordChangeNote')) ?></p>
 				<p class="important"><?php echo htmlspecialchars(Flux::message('PasswordChangeNote2')) ?></p>
+                <?php endif; ?>
 			</td>
 		</tr>
 		<tr>

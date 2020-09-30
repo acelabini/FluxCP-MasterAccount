@@ -44,9 +44,9 @@ return array(
 			'create'   => AccountLevel::UNAUTH,
 			'login'    => AccountLevel::UNAUTH,
 			'logout'   => AccountLevel::NORMAL,
-			'transfer' => AccountLevel::NORMAL,
-			'xferlog'  => AccountLevel::NORMAL,
-			'cart'     => AccountLevel::NORMAL,
+			'transfer' => Flux::config('MasterAccount') ? AccountLevel::NOONE : AccountLevel::NORMAL,
+			'xferlog'  => Flux::config('MasterAccount') ? AccountLevel::NOONE : AccountLevel::NORMAL,
+			'cart'     => Flux::config('MasterAccount') ? AccountLevel::NOONE : AccountLevel::NORMAL,
 			'changepass' => AccountLevel::NORMAL,
 			'edit'       => AccountLevel::ADMIN,
 			'changesex'  => AccountLevel::NORMAL,
@@ -54,7 +54,7 @@ return array(
 			'resend'     => AccountLevel::UNAUTH,
 			'resetpass'  => AccountLevel::UNAUTH,
 			'resetpw'    => AccountLevel::UNAUTH,
-			'changemail' => AccountLevel::NORMAL,
+			'changemail' => Flux::config('MasterAccount') ? AccountLevel::NOONE : AccountLevel::NORMAL,
 			'confirmemail' => AccountLevel::NORMAL,
 			'prune'        => AccountLevel::ANYONE
 		),
@@ -205,6 +205,11 @@ return array(
 		'webcommands'	=> array(
 			'index'			=> AccountLevel::ADMIN,
 		),
+		'master'		=> array(
+			'view'			=> AccountLevel::NORMAL,
+			'create'		=> AccountLevel::NORMAL,
+			'accounts'		=> AccountLevel::NORMAL,
+		)
 	),
 	// General feature permissions, handled by the modules themselves.
 	'features' => array(

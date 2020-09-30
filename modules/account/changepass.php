@@ -5,11 +5,23 @@ $this->loginRequired();
 
 $title = Flux::message('PasswordChangeTitle');
 
+$accountID = $params->get('id');
+$account = $session->account;
+
+if (!$accountID && Flux::config('MasterAccount')) {
+	$this->redirect();
+}
+if ($accountID && Flux::config('MasterAccount')) {
+	if (!($account = $session->loginServer->getGameAccount($account->id, $accountID))) {
+		$this->redirect();
+	}
+}
+
 if (count($_POST)) {
 	$currentPassword    = $params->get('currentpass');
 	$newPassword        = $params->get('newpass');
 	$confirmNewPassword = $params->get('confirmnewpass');
-	$useGMPassSecurity  = $session->account->group_level < Flux::config('EnableGMPassSecurity');
+	$useGMPassSecurity  = $account->group_level < Flux::config('EnableGMPassSecurity');
 	$passwordMinLength  = $useGMPassSecurity ? Flux::config('GMMinPasswordLength') : Flux::config('MinPasswordLength');
 	$passwordMinUpper   = $useGMPassSecurity ? Flux::config('GMPasswordMinUpper') : Flux::config('PasswordMinUpper');
 	$passwordMinLower   = $useGMPassSecurity ? Flux::config('GMPasswordMinLower') : Flux::config('PasswordMinLower');
@@ -22,7 +34,7 @@ if (count($_POST)) {
 	elseif (!$newPassword) {
 		$errorMessage = Flux::message('NeedNewPassword');
 	}
-	elseif (!Flux::config('AllowUserInPassword') && stripos($newPassword, $session->account->userid) !== false) {
+	elseif (!Flux::config('AllowUserInPassword') && stripos($newPassword, $account->userid) !== false) {
 		$errorMessage = Flux::message('NewPasswordHasUsername');
 	}
 	elseif (!ctype_graph($newPassword)) {
@@ -58,32 +70,34 @@ if (count($_POST)) {
 	else {
 		$sql = "SELECT user_pass AS currentPassword FROM {$server->loginDatabase}.login WHERE account_id = ?";
 		$sth = $server->connection->getStatement($sql);
-		$sth->execute(array($session->account->account_id));
-		
+		$sth->execute(array($account->account_id));
+
 		$account         = $sth->fetch();
 		$useMD5          = $session->loginServer->config->getUseMD5();
 		$currentPassword = $useMD5 ? Flux::hashPassword($currentPassword) : $currentPassword;
 		$newPassword     = $useMD5 ? Flux::hashPassword($newPassword) : $newPassword;
-		
+
 		if ($currentPassword != $account->currentPassword) {
 			$errorMessage = Flux::message('OldPasswordInvalid');
 		}
 		else {
 			$sql = "UPDATE {$server->loginDatabase}.login SET user_pass = ? WHERE account_id = ?";
 			$sth = $server->connection->getStatement($sql);
-			
-			if ($sth->execute(array($newPassword, $session->account->account_id))) {
+
+			if ($sth->execute(array($newPassword, $account->account_id))) {
 				$pwChangeTable = Flux::config('FluxTables.ChangePasswordTable');
 				
 				$sql  = "INSERT INTO {$server->loginDatabase}.$pwChangeTable ";
 				$sql .= "(account_id, old_password, new_password, change_ip, change_date) ";
 				$sql .= "VALUES (?, ?, ?, ?, NOW())";
 				$sth  = $server->connection->getStatement($sql);
-				$sth->execute(array($session->account->account_id, $currentPassword, $newPassword, $_SERVER['REMOTE_ADDR']));
+				$sth->execute(array($account->account_id, $currentPassword, $newPassword, $_SERVER['REMOTE_ADDR']));
 				
 				$session->setMessageData(Flux::message('PasswordHasBeenChanged'));
-				$session->logout();
-				$this->redirect($this->url('account', 'login'));
+				if (!Flux::config('MasterAccount')) {
+					$session->logout();
+					$this->redirect($this->url('account', 'login'));
+				}
 			}
 			else {
 				$errorMessage = Flux::message('FailedToChangePassword');

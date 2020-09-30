@@ -6,9 +6,17 @@ if (Flux::config('UseCaptcha') && Flux::config('EnableReCaptcha')) {
     $theme = Flux::config('ReCaptchaTheme');
 }
 
+if (!Flux::config('MasterAccount')) {
+    $this->redirect();
+}
+
 $title = Flux::message('AccountCreateTitle');
 
 $serverNames = $this->getServerNames();
+
+if (!$session->account) {
+    $this->redirect();
+}
 
 if (count($_POST)) {
     require_once 'Flux/RegisterError.php';
@@ -18,10 +26,7 @@ if (count($_POST)) {
         $username  = $params->get('username');
         $password  = $params->get('password');
         $confirm   = $params->get('confirm_password');
-        $email     = trim($params->get('email_address'));
-        $email2    = trim($params->get('email_address2'));
         $gender    = $params->get('gender');
-        $birthdate = $params->get('birthdate_date');
         $code      = $params->get('security_code');
 
         if (!($server = Flux::getServerGroupByName($serverGroupName))) {
@@ -29,60 +34,10 @@ if (count($_POST)) {
         }
 
         // Woohoo! Register ;)
-        $result = $server->loginServer->register($username, $password, $confirm, $email, $email2, $gender, $birthdate, $code);
+        $result = $server->loginServer->createGameAccount($username, $password, $confirm, $gender, $code);
 
         if ($result) {
-            if (Flux::config('RequireEmailConfirm')) {
-                require_once 'Flux/Mailer.php';
-
-                $user = $username;
-                $code = md5(rand());
-                $name = $session->loginAthenaGroup->serverName;
-                $link = $this->url('account', 'confirm', array('_host' => true, 'code' => $code, 'user' => $username, 'login' => $name));
-                $mail = new Flux_Mailer();
-                $sent = $mail->send($email, 'Account Confirmation', 'confirm', array('AccountUsername' => $username, 'ConfirmationLink' => htmlspecialchars($link)));
-
-                $createTable = Flux::config('FluxTables.AccountCreateTable');
-                $bind = array($code);
-
-                // Insert confirmation code.
-                $sql  = "UPDATE {$server->loginDatabase}.{$createTable} SET ";
-                $sql .= "confirm_code = ?, confirmed = 0 ";
-                if ($expire=Flux::config('EmailConfirmExpire')) {
-                    $sql .= ", confirm_expire = ? ";
-                    $bind[] = date('Y-m-d H:i:s', time() + (60 * 60 * $expire));
-                }
-
-                $sql .= " WHERE account_id = ?";
-                $bind[] = $result;
-
-                $sth  = $server->connection->getStatement($sql);
-                $sth->execute($bind);
-
-                $session->loginServer->permanentlyBan(null, sprintf(Flux::message('AccountConfirmBan'), $code), $result);
-
-                if ($sent) {
-                    $message  = Flux::message('AccountCreateEmailSent');
-                    $discordMessage = 'Confirmation email has been sent.';
-                }
-                else {
-                    $message  = Flux::message('AccountCreateFailed');
-                    $discordMessage = 'Failed to send the Confirmation email.';
-                }
-
-                $session->setMessageData($message);
-            }
-            else {
-                $session->login($server->serverName, $username, $password, false);
-                $session->setMessageData(Flux::message('AccountCreated'));
-                $discordMessage = 'Account Created.';
-            }
-            if(Flux::config('DiscordUseWebhook')) {
-                if(Flux::config('DiscordSendOnRegister')) {
-                    sendtodiscord(Flux::config('DiscordWebhookURL'), 'New User registration: "'. $username . '" , ' . $discordMessage);
-                }
-            }
-            $this->redirect();
+            $session->setMessageData(Flux::message('MasterGameAccountCreated'));
         }
         else {
             exit('Uh oh, what happened?');

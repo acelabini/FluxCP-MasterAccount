@@ -435,7 +435,9 @@ class Flux_Template {
 				$module = array_key_exists('module', $menuItem) ? $menuItem['module'] : false;
 				$action = array_key_exists('action', $menuItem) ? $menuItem['action'] : $defaultAction;
 				$exturl = array_key_exists('exturl', $menuItem) ? $menuItem['exturl'] : null;
-
+				$masterAccount = array_key_exists('master', $menuItem) ? $menuItem['master'] : null;
+				if ($masterAccount === false && Flux::config('MasterAccount')) continue;
+				if ($masterAccount === true && !Flux::config('MasterAccount')) continue;
 				if ($adminMenus) {
 					if ($auth->actionAllowed($module, $action) && $auth->config("modules.$module.$action") >= $adminMenuLevel) {
 						$allowedItems[] = array(

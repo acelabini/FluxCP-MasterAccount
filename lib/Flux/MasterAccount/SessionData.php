@@ -147,18 +147,20 @@ class Flux_MasterSessionData extends Flux_SessionData {
         }
 
         $usersTable = Flux::config('FluxTables.MasterUserTable');
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
         $sql  = "SELECT * FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} ";
-        $sql .= "WHERE group_id >= 0 AND email = ? LIMIT 1";
+        $sql .= "WHERE {$userColumns->get('group_id')} >= 0 AND {$userColumns->get('email')} = ? LIMIT 1";
         $smt  = $loginAthenaGroup->connection->getStatement($sql);
         $res  = $smt->execute(array($email));
+        $unbanAt = $userColumns->get('unban_at');
 
         if ($res && ($row = $smt->fetch())) {
-            if ($row->unban_date) {
-                if (new DateTime() > new DateTime($row->unban_date)) {
-                    $row->unban_date = 0;
-                    $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET unban_date = NULL WHERE id = ?";
+            if ($row->$unbanAt) {
+                if (new DateTime() > new DateTime($row->$userColumns->get('unban_at'))) {
+                    $row->$unbanAt = 0;
+                    $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET {$userColumns->get('unban_at')} = NULL WHERE {$userColumns->get('id')} = ?";
                     $sth = $loginAthenaGroup->connection->getStatement($sql);
-                    $sth->execute(array($row->id));
+                    $sth->execute(array($row->$unbanAt));
                 }
                 elseif (!Flux::config('AllowTempBanLogin')) {
                     throw new Flux_LoginError('Temporarily banned', Flux_LoginError::BANNED);
@@ -185,9 +187,10 @@ class Flux_MasterSessionData extends Flux_SessionData {
     private function getAccount(Flux_LoginAthenaGroup $loginAthenaGroup, $email)
     {
         $usersTable = Flux::config('FluxTables.MasterUserTable');
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
 
-        $sql  = "SELECT *, email as userid FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} ";
-        $sql .= "WHERE group_id >= 0 AND email = ? LIMIT 1";
+        $sql  = "SELECT *, {$userColumns->get('email')} as userid FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} ";
+        $sql .= "WHERE {$userColumns->get('group_id')} >= 0 AND {$userColumns->get('email')} = ? LIMIT 1";
         $smt  = $loginAthenaGroup->connection->getStatement($sql);
         $res  = $smt->execute(array($email));
 

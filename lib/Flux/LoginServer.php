@@ -178,7 +178,7 @@ class Flux_LoginServer extends Flux_BaseServer {
 			throw new Flux_RegisterError('Username is already taken', Flux_RegisterError::USERNAME_ALREADY_TAKEN);
 		}
 		
-		if (!Flux::config('AllowDuplicateEmails')) {
+		if (!Flux::config('AllowDuplicateEmails') && !Flux::config('MasterAccount')) {
 			$sql = "SELECT email FROM {$this->loginDatabase}.login WHERE email = ? LIMIT 1";
 			$sth = $this->connection->getStatement($sql);
 			$sth->execute(array($email));
@@ -214,6 +214,20 @@ class Flux_LoginServer extends Flux_BaseServer {
 		else {
 			return false;
 		}
+	}
+
+	public function registerGameAccount($account, $username, $password, $confirmPassword, $gender, $securityCode)
+	{
+		return self::register(
+			$username,
+			$password,
+			$confirmPassword,
+			$account->birth_date,
+			$securityCode,
+			$account->email,
+			$account->email,
+			$gender
+		);
 	}
 
 	/**

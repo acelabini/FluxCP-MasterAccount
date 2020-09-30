@@ -243,8 +243,11 @@ return array(
 		),
 		'AccountLabel'		=> array(
 			'AccountCreateHeading'		=> array('module' => 'account', 'action' => 'create'),
-			'LoginTitle'			=> array('module' => 'account', 'action' => 'login'),
-			'MyAccountLabel'	=> array('module' => 'account', 'action' => 'view'),
+			'LoginTitle'				=> array('module' => 'account', 'action' => 'login'),
+			'MyAccountLabel'			=> array('module' => 'account', 'action' => 'view', 'master' => false), // Don't display if Master Account option is enable
+			'MasterAccountLabel'		=> array('module' => 'master', 'action' => 'view', 'master' => true),
+			'GameAccountLabel'			=> array('module' => 'master', 'action' => 'accounts', 'master' => true),
+			'CreateGameAccountLabel'	=> array('module' => 'master', 'action' => 'create', 'master' => true),
 			'HistoryLabel'		=> array('module' => 'history'),
 			'ServiceDeskLabel'	=> array('module' => 'servicedesk'),
 			'LogoutTitle'		=> array('module' => 'account', 'action' => 'logout'),
@@ -316,6 +319,10 @@ return array(
 			'create'		=> 'Register',
 			'resetpass'		=> 'Reset Password',
 			'resend'		=> 'Resend E-mail Confirmation'
+		),
+		'master' 		=> array (
+			'view'			=>	'Account Info',
+			'create'		=>	'Create Account'
 		),
 		'guild'			=> array(
 			'index'			=> 'List Guilds',
@@ -518,7 +525,19 @@ return array(
         'ItemDescTable'     	=> 'cp_itemdesc',
         'MasterUserTable'      => 'cp_users',
         'MasterUserAccountTable'   => 'cp_user_accounts',
-        'MasterUserBanTable'   => 'cp_user_banlog'
+        'MasterUserBanTable'   => 'cp_user_banlog',
+		'MasterUserTableColumns' => array (
+			'id' => 'id',
+			'name' => 'name',
+			'email' => 'email',
+			'password' => 'password',
+			'group_id' => 'group_id',
+			'birth_date' => 'birth_date',
+			'last_ip' => 'last_ip',
+			'unban_at' => 'unban_date',
+			'created_at' => 'created_date',
+			'updated_at' => 'updated_date',
+		)
 	)
 );
 ?>

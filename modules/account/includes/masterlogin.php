@@ -29,8 +29,9 @@ try {
 catch (Flux_LoginError $e) {
     if ($email && $password && $e->getCode() != Flux_LoginError::INVALID_SERVER) {
         $loginAthenaGroup = Flux::getServerGroupByName($serverGroupName);
+        $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
 
-        $sql = "SELECT id, email FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} WHERE ";
+        $sql = "SELECT {$userColumns->get('id')}, {$userColumns->get('email')} FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} WHERE ";
 
         $sql .= "email = ? LIMIT 1";
         $sth = $loginAthenaGroup->connection->getStatement($sql);
