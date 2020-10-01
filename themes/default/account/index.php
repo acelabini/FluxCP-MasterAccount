@@ -86,6 +86,9 @@
 <?php echo $paginator->infoText() ?>
 <table class="horizontal-table">
 	<tr>
+        <?php if (Flux::config('MasterAccount')): ?>
+		    <th><?php echo $paginator->sortableColumn('login.master_id', Flux::message('MasterAccountIdLabel')) ?></th>
+        <?php endif; ?>
 		<th><?php echo $paginator->sortableColumn('login.account_id', Flux::message('AccountIdLabel')) ?></th>
 		<th><?php echo $paginator->sortableColumn('login.userid', Flux::message('UsernameLabel')) ?></th>
 		<?php if ($showPassword): ?><th><?php echo $paginator->sortableColumn('login.user_pass', Flux::message('PasswordLabel')) ?></th><?php endif ?>
@@ -102,6 +105,15 @@
 	</tr>
 	<?php foreach ($accounts as $account): ?>
 	<tr>
+        <?php if (Flux::config('MasterAccount')): ?>
+		<td align="right">
+			<?php if ($auth->actionAllowed('master', 'view') && $auth->allowedToViewAccount): ?>
+				<?php echo $this->linkToMasterAccount($account->user_id, $account->user_id) ?>
+			<?php else: ?>
+				<?php echo htmlspecialchars($account->user_id) ?>
+			<?php endif ?>
+		</td>
+        <?php endif; ?>
 		<td align="right">
 			<?php if ($auth->actionAllowed('account', 'view') && $auth->allowedToViewAccount): ?>
 				<?php echo $this->linkToAccount($account->account_id, $account->account_id) ?>

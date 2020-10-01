@@ -53,7 +53,8 @@ return array(
 	'AllowUserInPassword'		=> false,					// Whether or not to allow the password to contain the username. (NOTE: A case-insensitive search is performed)
 	'AllowDuplicateEmails'		=> false,					// Whether or not to allow duplicate e-mails to be used in registration. (See Mailer config options)
 	'MasterAccount'				=> true,                   // Use master account feature
-	'MasterAccountPasswordHash'=> 'bcrypt',               // Master account password hashing algorithm
+    'MasterAccountPasswordHash'=> 'bcrypt',               // Master account password hashing algorithm
+	'MasterAccountMaxAccounts' => 0,						// Maximum game account per master account; 0 to disable
 	'RequireEmailConfirm'		=> false,					// Require e-mail confirmation during registration.
 	'RequireChangeConfirm'		=> false,					// Require confirmation when changing e-mail addresses.
 	'EmailConfirmExpire'		=> 48,						// E-mail confirmations expire hours. Unconfirmed accounts will expire after this period of time.
@@ -279,7 +280,8 @@ return array(
 			'ServiceDeskLabel'	=> array('module' => 'servicedesk', 'action' => 'staffindex'),
 		),
 		'Misc. Stuff'	=> array(
-			'AccountLabel'		=> array('module' => 'account'),
+			'AccountLabel'			=> array('module' => 'account'),
+			'MasterAccountLabel'	=> array('module' => 'master'),
 			'CharacterLabel'	=> array('module' => 'character'),
 			'CPLogsLabel'		=> array('module' => 'cplog'),
 			'PagesLabel'		=> array('module' => 'pages'),
@@ -321,6 +323,7 @@ return array(
 			'resend'		=> 'Resend E-mail Confirmation'
 		),
 		'master' 		=> array (
+			'index'			=>	'List Master Accounts',
 			'view'			=>	'Account Info',
 			'create'		=>	'Create Account'
 		),
@@ -534,9 +537,10 @@ return array(
 			'group_id' => 'group_id',
 			'birth_date' => 'birth_date',
 			'last_ip' => 'last_ip',
+			'last_login' => 'last_login',
 			'unban_at' => 'unban_date',
-			'created_at' => 'created_date',
-			'updated_at' => 'updated_date',
+			'created_at' => 'create_date',
+			'updated_at' => 'update_date',
 		)
 	)
 );

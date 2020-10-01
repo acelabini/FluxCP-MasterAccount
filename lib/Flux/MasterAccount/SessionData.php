@@ -1,7 +1,4 @@
 <?php
-require_once 'Flux/DataObject.php';
-require_once 'Flux/ItemShop/Cart.php';
-require_once 'Flux/LoginError.php';
 
 /**
  * Contains all of Flux's session data.
@@ -71,6 +68,12 @@ class Flux_MasterSessionData extends Flux_SessionData {
 
         // Get new account data every request.
         if ($this->loginAthenaGroup && $this->username && ($account = $this->getAccount($this->loginAthenaGroup, $this->username))) {
+            $gameAccounts = $this->loginServer->getGameAccounts($account->id, true);
+            $account->game_accounts = [
+                'account_ids' => array_column($gameAccounts, 'account_id'),
+                'user_names' => array_column($gameAccounts, 'userid')
+            ];
+            $account->account_id = count($account->game_accounts['account_ids']) > 0 ? $account->game_accounts['account_ids'][0] : null;
             $this->account = $account;
             $this->account->group_level = AccountLevel::getGroupLevel($account->group_id);
 
@@ -153,14 +156,16 @@ class Flux_MasterSessionData extends Flux_SessionData {
         $smt  = $loginAthenaGroup->connection->getStatement($sql);
         $res  = $smt->execute(array($email));
         $unbanAt = $userColumns->get('unban_at');
+        $idColumn = $userColumns->get('id');
 
         if ($res && ($row = $smt->fetch())) {
             if ($row->$unbanAt) {
                 if (new DateTime() > new DateTime($row->$userColumns->get('unban_at'))) {
                     $row->$unbanAt = 0;
-                    $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET {$userColumns->get('unban_at')} = NULL WHERE {$userColumns->get('id')} = ?";
+                    $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET {$unbanAt} = 0, ";
+                    $sql .= "{$userColumns->get('updated_at')} = NOW() WHERE {$idColumn} = ?";
                     $sth = $loginAthenaGroup->connection->getStatement($sql);
-                    $sth->execute(array($row->$unbanAt));
+                    $sth->execute(array($row->$idColumn));
                 }
                 elseif (!Flux::config('AllowTempBanLogin')) {
                     throw new Flux_LoginError('Temporarily banned', Flux_LoginError::BANNED);
@@ -169,6 +174,12 @@ class Flux_MasterSessionData extends Flux_SessionData {
             if (is_null($row->confirmed_date) && Flux::config('RequireEmailConfirm')) {
                 throw new Flux_LoginError('Pending confirmation', Flux_LoginError::PENDING_CONFIRMATION);
             }
+
+            $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET ";
+            $sql .= "{$userColumns->get('last_ip')} = ?, {$userColumns->get('last_login')} = NOW(), ";
+            $sql .= "{$userColumns->get('updated_at')} = NOW() WHERE {$idColumn} = ?";
+            $sth = $loginAthenaGroup->connection->getStatement($sql);
+            $sth->execute(array($_SERVER['REMOTE_ADDR'], $row->$idColumn));
 
             $this->setServerNameData($server);
             $this->setUsernameData($email);
@@ -200,6 +211,11 @@ class Flux_MasterSessionData extends Flux_SessionData {
         else {
             return false;
         }
+    }
+
+    public function isMine($accountId)
+    {
+        return in_array($accountId, $this->account->game_accounts['account_ids']);
     }
 }
 ?>

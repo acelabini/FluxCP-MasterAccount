@@ -410,5 +410,10 @@ class Flux_SessionData {
 		$this->setMessageData(null);
 		return $message;
 	}
+
+	public function isMine($accountId)
+	{
+		return $accountId == $this->account->account_id;
+	}
 }
 ?>

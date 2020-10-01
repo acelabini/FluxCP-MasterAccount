@@ -11,7 +11,7 @@ if (!$charID) {
 
 $char = $server->getCharacter($charID);
 if ($char) {
-	if ($char->account_id != $session->account->account_id && !$auth->allowedToModifyCharPrefs) {
+	if ($session->isMine($char->account_id) && !$auth->allowedToModifyCharPrefs) {
 		$this->deny();
 	}
 	

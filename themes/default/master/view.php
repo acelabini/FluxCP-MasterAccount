@@ -1,6 +1,6 @@
 <?php if (!defined('FLUX_ROOT')) exit; ?>
 
-<h2><?php echo htmlspecialchars(Flux::message('MasterAccountViewHeading')) ?></h2>
+<h2><?php echo htmlspecialchars($headerTitle) ?></h2>
 <?php if (!empty($errorMessage)): ?>
     <p class="red"><?php echo htmlspecialchars($errorMessage) ?></p>
 <?php endif ?>
@@ -9,10 +9,10 @@
         <tr>
             <th><?php echo htmlspecialchars(Flux::message('AccountNameLabel')) ?></th>
             <td><?php echo htmlspecialchars($account->name) ?></td>
-            <th><?php echo htmlspecialchars(Flux::message('AccountIdLabel')) ?></th>
+            <th><?php echo htmlspecialchars(Flux::message('MasterAccountIdLabel')) ?></th>
             <td>
                 <?php if ($auth->allowedToSeeAccountID): ?>
-                    <?php echo $account->account_id ?>
+                    <?php echo $this->getMasterId($account->id) ?>
                 <?php else: ?>
                     <span class="not-applicable"><?php echo htmlspecialchars(Flux::message('NotApplicableLabel')) ?></span>
                 <?php endif ?>

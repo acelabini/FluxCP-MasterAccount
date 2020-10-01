@@ -206,6 +206,7 @@ return array(
 			'index'			=> AccountLevel::ADMIN,
 		),
 		'master'		=> array(
+			'index'			=> AccountLevel::LOWGM,
 			'view'			=> AccountLevel::NORMAL,
 			'create'		=> AccountLevel::NORMAL,
 			'accounts'		=> AccountLevel::NORMAL,

@@ -148,6 +148,12 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
         if (!($account = Flux::$sessionData->account)) {
             return false;
         }
+        $maxGameAccount = Flux::config('MasterAccountMaxAccounts');
+        if ($maxGameAccount > 0) {
+            if (count($this->getGameAccounts($account->id)) >= $maxGameAccount) {
+                return false;
+            }
+        }
 
         $accountId = $this->registerGameAccount(
             $account,
@@ -273,6 +279,25 @@ class Flux_MasterLoginServer extends Flux_LoginServer {
 
         if ($res) {
             return $sth->fetch();
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getGameAccounts($userId, $toArray = false)
+    {
+        $userAccountTable = Flux::config('FluxTables.MasterUserAccountTable');
+
+        $sql  = "SELECT *, login.account_id, login.userid, login.logincount, login.lastlogin, login.last_ip, login.sex";
+        $sql .= " FROM {$this->loginDatabase}.{$userAccountTable} AS ua";
+        $sql .= " JOIN {$this->loginDatabase}.login ON login.account_id = ua.account_id";
+        $sql .= " WHERE ua.user_id = ? ORDER BY ua.id ASC";
+        $sth  = $this->connection->getStatement($sql);
+        $res = $sth->execute(array($userId));
+
+        if ($res) {
+            return $sth->fetchAll($toArray ? \PDO::FETCH_ASSOC : null);
         }
         else {
             return false;

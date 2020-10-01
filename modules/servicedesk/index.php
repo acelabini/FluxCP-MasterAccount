@@ -3,10 +3,20 @@ if (!defined('FLUX_ROOT')) exit;
 $this->loginRequired();
 
 $tbl = Flux::config('FluxTables.ServiceDeskTable'); 
-$tblcat = Flux::config('FluxTables.ServiceDeskCatTable'); 
+$tblcat = Flux::config('FluxTables.ServiceDeskCatTable');
 
-$rep = $server->connection->getStatement("SELECT * FROM {$server->loginDatabase}.$tbl WHERE account_id = ? AND status != 'Closed' ORDER BY ticket_id DESC");
-$rep->execute(array($session->account->account_id));
+if (Flux::config('MasterAccount')) {
+	$accountIds = $session->account->game_accounts['account_ids'];
+	$accountIdsIn = str_repeat("?,", count($accountIds));
+	$accountIdsIn = rtrim($accountIdsIn, ',');
+	$sql = "SELECT * FROM {$server->loginDatabase}.$tbl WHERE account_id IN ({$accountIdsIn}) AND status != 'Closed' ORDER BY ticket_id DESC";
+	$rep = $server->connection->getStatement($sql);
+	$rep->execute($accountIds);
+} else {
+	$rep = $server->connection->getStatement("SELECT * FROM {$server->loginDatabase}.$tbl WHERE account_id = ? AND status != 'Closed' ORDER BY ticket_id DESC");
+	$rep->execute(array($session->account->account_id));
+}
+
 $ticketlist = $rep->fetchAll();
 $rowoutput=NULL;
 foreach($ticketlist as $trow){
@@ -32,8 +42,14 @@ $rowoutput.='</td>
 			</tr>';
 }
 
-$oldrep = $server->connection->getStatement("SELECT * FROM {$server->loginDatabase}.$tbl WHERE account_id = ? AND status = 'Closed' ORDER BY ticket_id DESC");
-$oldrep->execute(array($session->account->account_id));
+if (Flux::config('MasterAccount')) {
+	$sql = "SELECT * FROM {$server->loginDatabase}.$tbl WHERE account_id IN ({$accountIdsIn}) AND status = 'Closed' ORDER BY ticket_id DESC";
+	$oldrep = $server->connection->getStatement($sql);
+	$oldrep->execute($accountIds);
+} else {
+	$oldrep = $server->connection->getStatement("SELECT * FROM {$server->loginDatabase}.$tbl WHERE account_id = ? AND status = 'Closed' ORDER BY ticket_id DESC");
+	$oldrep->execute(array($session->account->account_id));
+}
 $oldticketlist = $oldrep->fetchAll();
 $oldrowoutput=NULL;
 foreach($oldticketlist as $oldtrow){

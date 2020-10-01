@@ -1,5 +1,6 @@
 <?php if (!defined('FLUX_ROOT')) exit; ?>
 <h2><?php echo htmlspecialchars(Flux::message('CreateGameAccountLabel')) ?></h2>
+<?php if (!$maxGameAccountReached) : ?>
 <p><strong>Note:</strong> <?php echo sprintf("Your password must be between %d and %d characters.", Flux::config('MinPasswordLength'), Flux::config('MaxPasswordLength')) ?></p>
 <?php if (Flux::config('PasswordMinUpper') > 0): ?>
 <p><strong>Note:</strong> <?php echo sprintf(Flux::message('PasswordNeedUpper'), Flux::config('PasswordMinUpper')) ?></p>
@@ -97,3 +98,4 @@
 		</tr>
 	</table>
 </form>
+<?php endif; ?>

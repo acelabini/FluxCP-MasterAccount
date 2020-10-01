@@ -18,7 +18,7 @@ if ($vending) {
     $isMine = false;
     $title = 'Vending Items Of [' . $vending->char_name . ']';
 
-    if ($vending->account_id == $session->account->account_id) {
+    if ($session->isMine($vending->account_id)) {
         $isMine = true;
     }
 

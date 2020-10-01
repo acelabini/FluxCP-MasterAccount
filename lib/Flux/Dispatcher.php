@@ -228,5 +228,36 @@ class Flux_Dispatcher {
 			exit;
 		}
 	}
+
+	/**
+	 * Redirect to create game account page if the user don't have any game account.
+	 *
+	 * @param string $baseURI
+	 * @param string $module
+	 * @param string $action
+	 * @access private
+	 */
+	public function gameAccountRequired($baseURI, $message = null, $module = 'master', $action = 'create')
+	{
+		$session = Flux::$sessionData;
+		if (!$message) {
+			$message = 'You are required to create a game account.';
+		}
+
+		if (!$session->account->account_id) {
+			if (Flux::config('UseCleanUrls')) {
+				$createGameAccountURL = sprintf('%s/%s/%s/?return_url=%s',
+					$baseURI, $module, $action, rawurlencode($_SERVER['REQUEST_URI']));
+			}
+			else {
+				$createGameAccountURL = sprintf('%s/?module=%s&action=%s&return_url=%s',
+					$baseURI, rawurlencode($module), rawurlencode($action), rawurlencode($_SERVER['REQUEST_URI']));
+			}
+
+			$session->setMessageData($message);
+			header('Location: '.preg_replace('&/{2,}&', '/', $createGameAccountURL));
+			exit;
+		}
+	}
 }
 ?>

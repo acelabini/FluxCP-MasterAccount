@@ -19,7 +19,7 @@ if ($session->loginAthenaGroup->serverName != $login) {
 	$this->deny();
 }
 
-if ($session->account->account_id != $account) {
+if ($session->isMine($account)) {
 	$this->deny();
 }
 

@@ -11,7 +11,7 @@ if (!$charID) {
 }
 
 $char = $server->getCharacter($charID);
-if (!$char || ($char->account_id != $session->account->account_id && !$auth->allowedToResetLook)) {
+if (!$char || ($session->isMine($char->account_id) && !$auth->allowedToResetLook)) {
 	$this->deny();
 }
 

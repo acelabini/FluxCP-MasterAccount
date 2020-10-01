@@ -837,9 +837,11 @@ return array(
 	'WCTitleLabel'			=> 'Web Commands',
 
 	// Master Account
+	'MasterAccountIdLabel'			 => 'Master ID',
 	'MasterAccountLabel'			 => 'Master Account',
 	'GameAccountLabel'			 	 => 'Game Accounts',
 	'MasterAccountViewHeading'      => 'Viewing Master Account',
+	'MasterAccountViewHeading2'    	 => 'Viewing Master Account (%s)',
 	'GameAccountsViewHeading'       => 'Viewing Game Accounts',
 	'MasterAccountViewSubHead'      => 'Game Accounts on %s',
 	'CreateGameAccountLabel'		 => 'Create Game Account',
@@ -848,5 +850,7 @@ return array(
 	'AccountNameInvalidChars' 		 => "Account name can only contain letters",
 	'PasswordContainsEmail'   		 => 'Your password cannot contain your email.',
 	'MasterGameAccountCreated'      => 'Account successfully created.',
+	'MasterTotalAccountsLabel'      => 'Total Game Accounts',
+	'ReachedMaxGameAccounts'      	 => 'You have reach the (%d) maximum game account per master account and can\'t create anymore.',
 );
 ?>

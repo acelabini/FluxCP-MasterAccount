@@ -28,7 +28,7 @@ $this->loginRequired();
 					No
 					<?php endif ?>
 					
-					<?php if($trow->account_id==$session->account->account_id): ?>
+					<?php if($session->isMine($trow->account_id)): ?>
 						<a href="<?php echo $this->url('servicedesk', 'staffsettings', array('option' => 'alerttoggle', 'staffid' => $trow->account_id, 'cur' => $trow->emailalerts))?>" ><i>(toggle)</i></a>
 					<?php endif ?>
 					</td>

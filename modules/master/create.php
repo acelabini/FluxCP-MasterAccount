@@ -18,6 +18,16 @@ if (!$session->account) {
     $this->redirect();
 }
 
+$maxGameAccount = Flux::config('MasterAccountMaxAccounts');
+$maxGameAccountReached = false;
+if ($maxGameAccount > 0) {
+    $accounts = $server->loginServer->getGameAccounts($session->account->id);
+    if (count($accounts) >= $maxGameAccount) {
+        $maxGameAccountReached = true;
+        $session->setMessageData(sprintf(Flux::message('ReachedMaxGameAccounts'), Flux::config('MasterAccountMaxAccounts')));
+    }
+}
+
 if (count($_POST)) {
     require_once 'Flux/RegisterError.php';
 

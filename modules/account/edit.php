@@ -25,7 +25,7 @@ if ($account) {
 		$this->deny();
 	}
 	
-	$isMine = $account->account_id == $session->account->account_id;
+	$isMine = $session->isMine($account->account_id);
 	
 	if ($isMine) {
 		$title = Flux::message('AccountEditTitle2');

@@ -77,7 +77,7 @@ $members = $sth->fetchAll();
 $isMine  = false;
 $amOwner = false;
 foreach ($members as $member) {
-	if ($guild && $member->account_id == $session->account->account_id) {
+	if ($guild && $session->isMine($member->account_id)) {
 		$isMine = true;
 		if ($member->position == 0) {
 			$amOwner = true;

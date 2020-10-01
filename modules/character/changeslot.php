@@ -10,7 +10,7 @@ if (!$charID) {
 }
 
 $char = $server->getCharacter($charID);
-if (!$char || ($char->account_id != $session->account->account_id && !$auth->allowedToChangeSlot)) {
+if (!$char || ($session->isMine($char->account_id) && !$auth->allowedToChangeSlot)) {
 	$this->deny();
 }
 
@@ -74,7 +74,7 @@ if (count($_POST)) {
 				$session->setMessageData("You have successfully changed {$char->name}'s slot to #$slot.");
 			}
 			
-			$isMine = $char->account_id == $session->account->account_id;
+			$isMine = $session->isMine($char->account_id);
 			if ($auth->actionAllowed('character', 'view') && ($isMine || $auth->allowedToViewCharacter)) {
 				$this->redirect($this->url('character', 'view', array('id' => $char->char_id)));
 			}

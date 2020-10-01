@@ -74,7 +74,7 @@ if ($char->pet_mob_name2) {
 	$char->pet_mob_name = $char->pet_mob_name2;
 }
 
-if ($char && $char->char_account_id == $session->account->account_id) {
+if ($char && $session->isMine($char->char_account_id)) {
 	$isMine = true;
 }
 else {

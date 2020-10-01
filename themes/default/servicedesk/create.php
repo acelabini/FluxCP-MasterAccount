@@ -3,16 +3,24 @@ if (!defined('FLUX_ROOT')) exit;
 $this->loginRequired();
 ?>
 <h2><?php echo htmlspecialchars(Flux::message('SDCreateNew')) ?></h2>
-<form action="<?php echo $this->urlWithQs ?>" method="post">
 	<h3>Required Information</h3>
 	<table class="vertical-table" width="100%">
 		<tr>
-			<th>Account ID</th>
-			<td><input type="text" name="account_id" id="account_id" value="<?php echo $session->account->account_id ?>" readonly="readonly" /></td>
+            <?php if (Flux::config('MasterAccount')): ?>
+            <form action="<?php echo $this->urlWithQs ?>" method="post">
+                <th>Account</th>
+                <td><select name="select_account_id" onchange="this.form.submit()"><?php echo $accountList ?></select></td>
+            </form>
+            <?php else: ?>
+                <th>Account ID</th>
+			    <td><input type="text" name="account_id" id="account_id" value="<?php echo $session->account->account_id ?>" readonly="readonly" /></td>
+            <?php endif; ?>
+            <form action="<?php echo $this->urlWithQs ?>" method="post">
+                <input type="hidden" name="account_id" id="account_id" value="<?php echo $accountId ?>" />
 		</tr>
 		<tr>
 			<th>Character</th>
-			<td><select name="char_id"><?php echo $charselect ?></select></td>
+            <td><select name="char_id"><?php echo $charselect ?></select></td>
 		</tr>
 		<tr>
 			<th>Subject</th>

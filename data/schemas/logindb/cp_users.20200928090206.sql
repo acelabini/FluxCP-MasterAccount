@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `cp_users` (
   `group_id` tinyint(3) NOT NULL default '0',
   `birth_date` date NOT NULL,
   `last_ip` varchar(100) NOT NULL,
+  `last_login` datetime DEFAULT NULL,
   `confirmed_date` datetime DEFAULT NULL,
   `confirm_code` varchar(32) DEFAULT NULL,
   `confirm_expire` datetime DEFAULT NULL,
@@ -15,3 +16,6 @@ CREATE TABLE IF NOT EXISTS `cp_users` (
   `delete_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+CREATE INDEX master_email
+ON cp_users (email);

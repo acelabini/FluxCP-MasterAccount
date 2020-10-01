@@ -8,7 +8,32 @@ if (!Flux::config('MasterAccount')) {
 $title = Flux::message('AccountViewTitle');
 
 require_once 'Flux/TemporaryTable.php';
-$account       = $session->account;
+$account   = $session->account;
+$userId = $params->get('id');
+$isMine = false;
+$headerTitle = Flux::message('MasterAccountViewHeading');
+
+if ($userId && $session->account->id !== $userId) {
+    $isMine = false;
+}
+
+if (!$userId || $session->account->id === $userId) {
+    $isMine = true;
+}
+
+if (!$isMine) {
+    // Allowed to view other peoples' account information?
+    if (!$auth->allowedToViewAccount) {
+        $this->deny();
+    }
+    $usersTable = Flux::config('FluxTables.MasterUserTable');
+
+    $sql = "SELECT * FROM {$server->loginDatabase}.{$usersTable} WHERE id = ? LIMIT 1";
+    $sth = $server->connection->getStatement($sql);
+    $sth->execute(array($userId));
+    $account = $sth->fetch();
+    $headerTitle = $title = sprintf(Flux::message('MasterAccountViewHeading2'), $account->email);
+}
 
 $userAccounts = array();
 $userAccountTable = Flux::config('FluxTables.MasterUserAccountTable');
