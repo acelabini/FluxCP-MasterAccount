@@ -28,7 +28,7 @@
 		<th>Account</th>
 		<td>
 			<?php if ($isMine): ?>
-				<a href="<?php echo $this->url('account', 'view') ?>"><?php echo htmlspecialchars($char->userid) ?></a>
+				<a href="<?php echo $this->url('account', 'view', Flux::config('MasterAccount')? ['id' => $char->char_account_id] : NULL) ?>"><?php echo htmlspecialchars($char->userid) ?></a>
 			<?php else: ?>
 				<?php echo $this->linkToAccount($char->char_account_id, $char->userid) ?>
 			<?php endif ?>

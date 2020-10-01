@@ -29,7 +29,7 @@ if (Flux::config('MasterAccount')) {
 	$usersTable = Flux::config('FluxTables.MasterUserTable');
 	$userAccountTable = Flux::config('FluxTables.MasterUserAccountTable');
 	$userColumns = Flux::config('FluxTables.MasterUserTableColumns');
-	$userAccountColumns = "useraccounts.user_id";
+	$userAccountColumns = ", useraccounts.user_id";
 	$sqlpartial .= "LEFT OUTER JOIN {$server->loginDatabase}.{$userAccountTable} AS useraccounts ON login.account_id = useraccounts.account_id ";
 	$sqlpartial .= "LEFT OUTER JOIN {$server->loginDatabase}.{$usersTable} AS master ON useraccounts.user_id = master.{$userColumns->get('id')} ";
 }
@@ -166,7 +166,7 @@ $paginator->setSortableColumns(array(
 	'reg_date'
 ));
 
-$sql  = $paginator->getSQL("SELECT login.*, {$creditColumns}, {$accountColumns}, {$createColumns}, {$userAccountColumns} FROM {$server->loginDatabase}.login $sqlpartial");
+$sql  = $paginator->getSQL("SELECT login.*, {$creditColumns}, {$accountColumns}, {$createColumns} {$userAccountColumns} FROM {$server->loginDatabase}.login $sqlpartial");
 $sth  = $server->connection->getStatement($sql);
 $sth->execute($bind);
 

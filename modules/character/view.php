@@ -14,11 +14,20 @@ if($server->isRenewal) {
 	$fromTables = array("{$server->charMapDatabase}.item_db", "{$server->charMapDatabase}.item_db2");
 	$mobdb = array("mob_db","mob_db2");
 }
+
+$mobDBExist0 = "SHOW tables like '{$mobdb[0]}'";
+$sth = $server->connection->getStatement($mobDBExist0);
+$sth->execute();
+$mobDBExist0 = $sth->fetch();
+
+$mobDBExist1 = "SHOW tables like '{$mobdb[1]}'";
+$sth = $server->connection->getStatement($mobDBExist1);
+$sth->execute();
+$mobDBExist1 = $sth->fetch();
+
 $tableName = "{$server->charMapDatabase}.items";
 $tempTable = new Flux_TemporaryTable($server->connection, $tableName, $fromTables);
-
 $charID = $params->get('id');
-
 $col  = "ch.char_id, ch.account_id, ch.char_num, ch.name AS char_name, ch.class AS char_class, ch.base_level AS char_base_level, ";
 $col .= "ch.job_level AS char_job_level, ch.base_exp AS char_base_exp, ch.job_exp AS char_job_exp, ch.zeny AS char_zeny, ";
 $col .= "ch.str AS char_str, ch.agi AS char_agi, ch.vit AS char_vit, ";
@@ -42,7 +51,13 @@ $col .= "homun.hp AS homun_hp, homun.max_hp As homun_max_hp, homun.sp AS homun_s
 $col .= "homun.skill_point AS homun_skill_point, homun.alive AS homun_alive, ";
 
 $col .= "pet.class AS pet_class, pet.name AS pet_name, pet.level AS pet_level, pet.intimate AS pet_intimacy, ";
-$col .= "pet.hungry AS pet_hungry, pet_mob.kName AS pet_mob_name, pet_mob2.kName AS pet_mob_name2, ";
+$col .= "pet.hungry AS pet_hungry, ";
+
+if ($mobDBExist0)
+	$col .= "pet_mob.kName AS pet_mob_name, ";
+
+if ($mobDBExist1)
+	$col .= "pet_mob2.kName AS pet_mob_name2, ";
 
 $col .= "IFNULL(reg.value, 0) AS death_count";
 
@@ -60,8 +75,13 @@ $sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`party` ON ch.party_id = par
 $sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`char` AS party_leader ON party.leader_char = party_leader.char_id ";
 $sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`homunculus` AS homun ON ch.homun_id = homun.homun_id ";
 $sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`pet` ON ch.pet_id = pet.pet_id ";
-$sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`".$mobdb[0]."` AS pet_mob ON pet_mob.ID = pet.class ";
-$sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`".$mobdb[1]."` AS pet_mob2 ON pet_mob2.ID = pet.class ";
+
+if ($mobDBExist0)
+	$sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`".$mobdb[0]."` AS pet_mob ON pet_mob.ID = pet.class ";
+
+if ($mobDBExist1)
+	$sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`".$mobdb[1]."` AS pet_mob2 ON pet_mob2.ID = pet.class ";
+
 $sql .= "LEFT OUTER JOIN {$server->charMapDatabase}.`char_reg_num` AS reg ON reg.char_id = ch.char_id AND reg.key = 'PC_DIE_COUNTER' ";
 $sql .= "WHERE ch.char_id = ?";
 
@@ -84,7 +104,6 @@ else {
 if (!$isMine && !$auth->allowedToViewCharacter) {
 	$this->deny();
 }
-
 if ($char) {
 	$title = "Viewing Character ({$char->char_name})";
 	
