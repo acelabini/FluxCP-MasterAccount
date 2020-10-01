@@ -2,15 +2,15 @@
 // This is the application configuration file. All values have been set to
 // the default, and should be changed as needed.
 return array(
-	'ServerAddress'				=> 'http://cp.project-freya.test/',				// This value is the hostname:port under which Flux runs. (e.g., example.com or example.com:80)
+	'ServerAddress'				=> 'http://localhost/',				// This value is the hostname:port under which Flux runs. (e.g., example.com or example.com:80)
 	'BaseURI'					=> '',						// The base URI is the base web root on which your application lies.
-	'InstallerPassword'			=> 'passwordsecret',		// Installer/updater password.
+	'InstallerPassword'			=> 'secetpassword',			// Installer/updater password.
 	'RequireOwnership'			=> true,					// Require the executing user to be owner of the FLUX_ROOT/data/ directory tree? (Better for security)
-															// WARNING: This will be mostly IGNORED on non-POSIX-compliant OSes (e.g. Windows).
+	// WARNING: This will be mostly IGNORED on non-POSIX-compliant OSes (e.g. Windows).
 	'DefaultLoginGroup'			=> null,
 	'DefaultCharMapServer'		=> null,
 	'DefaultLanguage'			=> 'en_us',					// Specify the default control panel language (see FLUX_ROOT/lang/ directory for available languages.)
-	'SiteTitle'					=> 'Project Freya Control Panel',	// This value is only used if the theme decides to use it.
+	'SiteTitle'					=> 'FluxRO Control Panel',	// This value is only used if the theme decides to use it.
 	'ThemeName'					=> array('default', 'bootstrap'), // Names of the themes you would like list for use in the footer. Themes are in FLUX_ROOT/themes.
 	'ScriptTimeLimit'			=> 0,						// Script execution time limit. Specifies (in seconds) how long a page should run before timing out. (0 means forever)
 	'MissingEmblemBMP'			=> 'empty.bmp',				//
@@ -34,8 +34,8 @@ return array(
 	'SingleMatchRedirectItem'	=> false,					// Same as above, for item module.
 	'SingleMatchRedirectMobs'	=> false,					// Same as above, for monster module.
 	'UsernameAllowedChars'		=> 'a-zA-Z0-9_',			// PCRE Format Pattern. default: 'a-zA-Z0-9_' (alphanumeric and underscore)
-															// WARNING: This string isn't escaped so be careful which chars you use!
-															// PCRE Pattern Ref: http://php.net/manual/en/pcre.pattern.php
+	// WARNING: This string isn't escaped so be careful which chars you use!
+	// PCRE Pattern Ref: http://php.net/manual/en/pcre.pattern.php
 	'MinUsernameLength'			=> 4,						// Minimum username length.
 	'MaxUsernameLength'			=> 23,						// Maximum username length.
 	'MinPasswordLength'			=> 8,						// Minimum password length.
@@ -53,7 +53,7 @@ return array(
 	'AllowUserInPassword'		=> false,					// Whether or not to allow the password to contain the username. (NOTE: A case-insensitive search is performed)
 	'AllowDuplicateEmails'		=> false,					// Whether or not to allow duplicate e-mails to be used in registration. (See Mailer config options)
 	'MasterAccount'				=> true,                   // Enable master account feature
-    'MasterAccountPasswordHash'=> 'bcrypt',               // Master account password hashing algorithm
+	'MasterAccountPasswordHash'=> 'bcrypt',               // Master account password hashing algorithm
 	'MasterAccountMaxAccounts' => 0,						// Maximum game account per master account; 0 to disable
 	'RequireEmailConfirm'		=> false,					// Require e-mail confirmation during registration.
 	'RequireChangeConfirm'		=> false,					// Require confirmation when changing e-mail addresses.
@@ -110,7 +110,7 @@ return array(
 	'DivorceKeepRings'			=> false,					// Keep wedding rings after divorce?
 	'IpWhitelistPattern'		=>							// PCRE Format Pattern. It's recommended you add your gameserver, webserver and server owner's IPs here.
 		'(127\.0\.0\.1|0(\.[0\*]){3})',						// WARNING: This string isn't escaped so be careful which chars you use!
-															// By default, whitelists 127.0.0.1 (localhost) and 0.0.0.0 (all interfaces; whitelists all wildcard bans that can achive this too)
+	// By default, whitelists 127.0.0.1 (localhost) and 0.0.0.0 (all interfaces; whitelists all wildcard bans that can achive this too)
 	'AllowIpBanLogin'			=> false,					// Allow logging into account from banned IP.
 	'AllowTempBanLogin'			=> false,					// Allow logging in of temporarily banned accounts.
 	'AllowPermBanLogin'			=> false,					// Allow logging in of permanently banned accounts.
@@ -118,7 +118,7 @@ return array(
 	'ItemShopMaxCost'			=> 99,						// Max price an item can be sold for.
 	'ItemShopMaxQuantity'		=> 99,						// Max quantity the item may be sold at once for.
 	'ItemShopItemPerPage'		=> 5,						// The number of items to display per page in the "Item Shop" page.
-    'ShowItemDesc'              => false,                   // Displays generated item descs from parsed itemInfo.lua
+	'ShowItemDesc'              => false,                   // Displays generated item descs from parsed itemInfo.lua
 	'HideFromWhosOnline'		=> AccountLevel::LOWGM,		// Levels greater than or equal to this will be hidden from the "Who's Online" page.
 	'HideFromMapStats'			=> AccountLevel::LOWGM,		// Levels greater than or equal to this will be hidden from the "Map Stats" page.
 	'EnableGMPassSecurity'		=> AccountLevel::LOWGM,		// Levels greater than or equal to this will be required to use passwords that meet the earlier GM Password settings.
@@ -129,21 +129,21 @@ return array(
 	),
 
 	'HoldUntrustedAccount'		=> 0,						// This is the time in hours to hold a donation crediting process for, if the account
-															// isn't a trusted account. Specify 0 or false to disable this feature.
+	// isn't a trusted account. Specify 0 or false to disable this feature.
 
 	'AutoUnholdAccount'			=> false,					// Enable this to auto-unhold an account and credit it if the transaction is still
-															// valid.  This only applies if you are using the HoldUnstrustedAccount feature.
-															// If you want to run a cron job instead, you can make a request to the '/donate/update'
-															// module/action with the InstallerPassword as the password to run the update task.
-															// With clean URLs: http://<server>/<baseURI>/donate/update?password=<InstallerPassword>
-															// Without clean URLs: http://<server>/<baseURI>?module=donate&action=update&password=<InstallerPassword>
-															// NOTE: This option is HIGHLY inefficient, it's recommended to run a cron job instead.
+	// valid.  This only applies if you are using the HoldUnstrustedAccount feature.
+	// If you want to run a cron job instead, you can make a request to the '/donate/update'
+	// module/action with the InstallerPassword as the password to run the update task.
+	// With clean URLs: http://<server>/<baseURI>/donate/update?password=<InstallerPassword>
+	// Without clean URLs: http://<server>/<baseURI>?module=donate&action=update&password=<InstallerPassword>
+	// NOTE: This option is HIGHLY inefficient, it's recommended to run a cron job instead.
 
 	'AutoPruneAccounts'			=> false,					// Enable this to automatically prune expired accounts. Enabling this is a performance
-															// performance killer. See 'AutoUnholdAccount' for running this task as a cron job,
-															// the module is 'account' and the action is 'prune'.
-															// With clean URLs: http://<server>/<baseURI>/account/prune?password=<InstallerPassword>
-															// Without clean URLs: http://<server>/<baseURI>?module=account&action=prune&password=<InstallerPassword>
+	// performance killer. See 'AutoUnholdAccount' for running this task as a cron job,
+	// the module is 'account' and the action is 'prune'.
+	// With clean URLs: http://<server>/<baseURI>/account/prune?password=<InstallerPassword>
+	// Without clean URLs: http://<server>/<baseURI>?module=account&action=prune&password=<InstallerPassword>
 
 	'ShopImageExtensions'		=> array(					// These are the image extensions allowed for uploading in the item shop.
 		'png', 'jpg', 'gif', 'bmp', 'jpeg'
@@ -158,7 +158,7 @@ return array(
 	'BlacksmithRankingLimit'	=> 20,						//
 	'HomunRankingLimit'			=> 20,						//
 	'MVPRankingLimit'			=> 20,						//
-	
+
 	'RankingHideGroupLevel'		=> AccountLevel::LOWGM,		//
 	'InfoHideZenyGroupLevel'	=> AccountLevel::LOWGM,		// Minimum group level of account to hide zeny from in server information page.
 
@@ -199,13 +199,13 @@ return array(
 
 	'AdminMenuNewStyle'			=> true,					// Use new-style admin menu;  Applies to 'default' theme.
 	'EnablePeakDisplay'			=> true,					// Display Peak User count on Server Status page.
-	
-	
+
+
 // News Options
 	'CMSNewsOnHomepage'			=> true,					// Display News on Home Page instead of "You've Just Installed FluxCP" message?
 	'CMSNewsType'				=> 1,						// Type = source of news feed:
-															//	1 = Built-in news page
-															//	2 = RSS Import
+	//	1 = Built-in news page
+	//	2 = RSS Import
 
 	'CMSNewsRSS'				=> 'https://rathena.org/board/rss/1-latest-community-announcements.xml/',		// Use if CMSNewsType = 2
 	'CMSNewsLimit'				=> 4,						// Number of news items to display
@@ -297,7 +297,7 @@ return array(
 			//'Economy'		=> array('module' => 'economy')
 		)
 	),
-	
+
 	// Sub-menu items that are displayed for any action belonging to a
 	// particular module. The format it simple.
 	'SubMenuItems'	=> array(
@@ -412,7 +412,7 @@ return array(
 			'index'			=> 'Buyers',
 		),
 	),
-	
+
 	'AllowMD5PasswordSearch'		=> false,
 	'ReallyAllowMD5PasswordSearch'	=> false, // Are you POSITIVELY sure?
 
@@ -525,10 +525,10 @@ return array(
 		'ServiceDeskCatTable'	=> 'cp_servicedeskcat',
 		'ServiceDeskSettingsTable'	=> 'cp_servicedesksettings',
 		'WebCommandsTable'		=> 'cp_commands',
-        'ItemDescTable'     	=> 'cp_itemdesc',
-        'MasterUserTable'      => 'cp_users',
-        'MasterUserAccountTable'   => 'cp_user_accounts',
-        'MasterUserBanTable'   => 'cp_user_banlog',
+		'ItemDescTable'     	=> 'cp_itemdesc',
+		'MasterUserTable'      => 'cp_users',
+		'MasterUserAccountTable'   => 'cp_user_accounts',
+		'MasterUserBanTable'   => 'cp_user_banlog',
 		'MasterUserTableColumns' => array (
 			'id' => 'id',
 			'name' => 'name',

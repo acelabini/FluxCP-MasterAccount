@@ -27,7 +27,7 @@ try {
             $mail = new Flux_Mailer();
             $sent = $mail->send(
                 $email,
-                'Project Freya: Account Confirmation',
+                'Account Confirmation',
                 'confirm',
                 array('AccountUsername' => $email, 'ConfirmationLink' => htmlspecialchars($link)));
 

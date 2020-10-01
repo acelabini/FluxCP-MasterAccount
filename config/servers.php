@@ -4,15 +4,15 @@ return array(
 	// specify multiple server groups (however they should share the same login
 	// server whilst they are allowed to have multiple char/map pairs).
 	array(
-		'ServerName'     => 'Project Freya',
+		'ServerName'     => 'FluxRO',
 		// Global database configuration (excludes logs database configuration).
 		'DbConfig'       => array(
 			//'Socket'     => '/tmp/mysql.sock',
 			//'Port'       => 3306,
 			//'Encoding'   => 'utf8', // Connection encoding -- use whatever here your MySQL tables collation is.
 			'Convert'    => 'utf8',
-				// -- 'Convert' option only works when 'Encoding' option is specified and iconv (http://php.net/iconv) is available.
-				// -- It specifies the encoding to convert your MySQL data to on the website (most likely needs to be utf8)
+			// -- 'Convert' option only works when 'Encoding' option is specified and iconv (http://php.net/iconv) is available.
+			// -- It specifies the encoding to convert your MySQL data to on the website (most likely needs to be utf8)
 			'Hostname'   => '127.0.0.1',
 			'Username'   => 'homestead',
 			'Password'   => 'secret',
@@ -32,11 +32,11 @@ return array(
 			//'Port'       => 3306,
 			//'Encoding'   => null, // Connection encoding -- use whatever here your MySQL tables collation is.
 			'Convert'    => 'utf8',
-				// -- 'Convert' option only works when 'Encoding' option is specified and iconv (http://php.net/iconv) is available.
-				// -- It specifies the encoding to convert your MySQL data to on the website (most likely needs to be utf8)
+			// -- 'Convert' option only works when 'Encoding' option is specified and iconv (http://php.net/iconv) is available.
+			// -- It specifies the encoding to convert your MySQL data to on the website (most likely needs to be utf8)
 			'Hostname'   => '127.0.0.1',
-			'Username'   => 'homestead',
-			'Password'   => 'secret',
+			'Username'   => 'ragnarok',
+			'Password'   => 'ragnarok',
 			'Database'   => 'ragnarok',
 			'Persistent' => true,
 			'Timezone'   => null // Possible values is as described in the comment in DbConfig.
@@ -59,25 +59,25 @@ return array(
 				//'ResetDenyMaps'   => 'sec_pri', // Defaults to 'sec_pri'. This value can be an array of map names.
 				//'Database'        => 'ragnarok', // Defaults to DbConfig.Database
 				'ExpRates' => array(
-					'Base'        => 300, // Rate at which (base) exp is given
-					'Job'         => 300, // Rate at which job exp is given
+					'Base'        => 100, // Rate at which (base) exp is given
+					'Job'         => 100, // Rate at which job exp is given
 					'Mvp'         => 100  // MVP bonus exp rate
 				),
 				'DropRates' => array(
 					// The rate the common items (in the ETC tab, besides card) are dropped
-					'Common'      => 300,
+					'Common'      => 100,
 					'CommonBoss'  => 100,
 					// The rate healing items (that restore HP or SP) are dropped
-					'Heal'        => 300,
+					'Heal'        => 100,
 					'HealBoss'    => 100,
 					// The rate usable items (in the item tab other then healing items) are dropped
-					'Useable'     => 300,
+					'Useable'     => 100,
 					'UseableBoss' => 100,
 					// The rate at which equipment is dropped
-					'Equip'       => 300,
+					'Equip'       => 100,
 					'EquipBoss'   => 100,
 					// The rate at which cards are dropped
-					'Card'        => 300,
+					'Card'        => 100,
 					'CardBoss'    => 100,
 					// The rate adjustment for the MVP items that the MVP gets directly in their inventory
 					'MvpItem'     => 100
