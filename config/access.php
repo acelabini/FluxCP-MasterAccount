@@ -52,8 +52,8 @@ return array(
 			'changesex'  => AccountLevel::NORMAL,
 			'confirm'    => AccountLevel::UNAUTH,
 			'resend'     => AccountLevel::UNAUTH,
-			'resetpass'  => AccountLevel::UNAUTH,
-			'resetpw'    => AccountLevel::UNAUTH,
+			'resetpass'  => Flux::config('MasterAccount') ? AccountLevel::ANYONE : AccountLevel::UNAUTH,
+			'resetpw'    => Flux::config('MasterAccount') ? AccountLevel::ANYONE : AccountLevel::UNAUTH,
 			'changemail' => Flux::config('MasterAccount') ? AccountLevel::NOONE : AccountLevel::NORMAL,
 			'confirmemail' => AccountLevel::NORMAL,
 			'prune'        => AccountLevel::ANYONE
@@ -209,6 +209,7 @@ return array(
 			'index'			=> AccountLevel::LOWGM,
 			'view'			=> AccountLevel::NORMAL,
 			'create'		=> AccountLevel::NORMAL,
+			'changepass' 	=> AccountLevel::NORMAL,
 			'accounts'		=> AccountLevel::NORMAL,
 		)
 	),

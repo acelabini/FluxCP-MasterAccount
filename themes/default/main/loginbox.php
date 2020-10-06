@@ -19,7 +19,7 @@ if ($session->isLoggedIn()):
 			<span style="display: inline-block; margin: 2px 2px 2px 0">
 				You are currently logged in as
                 <strong>
-                    <a href="<?php echo $this->url('account', 'view') ?>" title="View account">
+                    <a href="<?php echo $this->url(Flux::config('MasterAccount') ? 'master' : 'account', 'view') ?>" title="View account">
                         <?php echo htmlspecialchars($loggedInAs)
                         ?>
                     </a>

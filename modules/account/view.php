@@ -24,7 +24,7 @@ $accountID     = $params->get('id');
 $account       = false;
 
 if (!$accountID && Flux::config('MasterAccount')) {
-	$this->redirect();
+	$this->deny();
 }
 
 if (!$accountID || $accountID == $session->account->account_id) {

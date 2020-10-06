@@ -1,6 +1,10 @@
 <?php
 if (!defined('FLUX_ROOT')) exit;
 
+if (!Flux::config('MasterAccount')) {
+    $this->deny();
+}
+
 $serverGroupName = $params->get('server');
 $email = $params->get('email');
 $password = $params->get('password');
@@ -32,7 +36,6 @@ catch (Flux_LoginError $e) {
         $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
 
         $sql = "SELECT {$userColumns->get('id')}, {$userColumns->get('email')} FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} WHERE ";
-
         $sql .= "email = ? LIMIT 1";
         $sth = $loginAthenaGroup->connection->getStatement($sql);
         $sth->execute(array($email));

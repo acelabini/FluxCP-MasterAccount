@@ -19,11 +19,13 @@
 			<td><p><?php echo htmlspecialchars(Flux::message('ResendServerInfo')) ?></p></td>
 		</tr>
 		<?php endif ?>
-		<tr>
-			<th><label for="userid"><?php echo htmlspecialchars(Flux::message('ResendAccountLabel')) ?></label></th>
-			<td><input type="text" name="userid" id="userid" /></td>
-			<td><p><?php echo htmlspecialchars(Flux::message('ResendAccountInfo')) ?></p></td>
-		</tr>
+        <?php if (!Flux::config('MasterAccount')): ?>
+            <tr>
+                <th><label for="userid"><?php echo htmlspecialchars(Flux::message('ResendAccountLabel')) ?></label></th>
+                <td><input type="text" name="userid" id="userid" /></td>
+                <td><p><?php echo htmlspecialchars(Flux::message('ResendAccountInfo')) ?></p></td>
+            </tr>
+        <?php endif; ?>
 		<tr>
 			<th><label for="email"><?php echo htmlspecialchars(Flux::message('ResendEmailLabel')) ?></label></th>
 			<td><input type="text" name="email" id="email" /></td>

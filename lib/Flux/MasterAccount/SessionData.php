@@ -70,8 +70,8 @@ class Flux_MasterSessionData extends Flux_SessionData {
         if ($this->loginAthenaGroup && $this->username && ($account = $this->getAccount($this->loginAthenaGroup, $this->username))) {
             $gameAccounts = $this->loginServer->getGameAccounts($account->id, true);
             $account->game_accounts = [
-                'account_ids' => array_column($gameAccounts, 'account_id'),
-                'user_names' => array_column($gameAccounts, 'userid')
+                'account_ids' => $gameAccounts ? array_column($gameAccounts, 'account_id') : [],
+                'user_names' => $gameAccounts ? array_column($gameAccounts, 'userid') : []
             ];
             $account->account_id = count($account->game_accounts['account_ids']) > 0 ? $account->game_accounts['account_ids'][0] : null;
             $this->account = $account;
@@ -151,6 +151,7 @@ class Flux_MasterSessionData extends Flux_SessionData {
 
         $usersTable = Flux::config('FluxTables.MasterUserTable');
         $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
+
         $sql  = "SELECT * FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} ";
         $sql .= "WHERE {$userColumns->get('group_id')} >= 0 AND {$userColumns->get('email')} = ? LIMIT 1";
         $smt  = $loginAthenaGroup->connection->getStatement($sql);
@@ -159,11 +160,13 @@ class Flux_MasterSessionData extends Flux_SessionData {
         $idColumn = $userColumns->get('id');
 
         if ($res && ($row = $smt->fetch())) {
-            if ($row->$unbanAt) {
-                if (new DateTime() > new DateTime($row->$userColumns->get('unban_at'))) {
+            if ($unbanAt && $row->$unbanAt) {
+                if (new DateTime() > new DateTime($row->$unbanAt)) {
                     $row->$unbanAt = 0;
                     $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET {$unbanAt} = 0, ";
-                    $sql .= "{$userColumns->get('updated_at')} = NOW() WHERE {$idColumn} = ?";
+                    if (!empty($userColumns->get('updated_at')))
+                        $sql .= "{$userColumns->get('updated_at')} = NOW() ";
+                    $sql .= "WHERE {$idColumn} = ?";
                     $sth = $loginAthenaGroup->connection->getStatement($sql);
                     $sth->execute(array($row->$idColumn));
                 }
@@ -176,8 +179,17 @@ class Flux_MasterSessionData extends Flux_SessionData {
             }
 
             $sql = "UPDATE {$loginAthenaGroup->loginDatabase}.{$usersTable} SET ";
-            $sql .= "{$userColumns->get('last_ip')} = ?, {$userColumns->get('last_login')} = NOW(), ";
-            $sql .= "{$userColumns->get('updated_at')} = NOW() WHERE {$idColumn} = ?";
+            $sql .= "{$userColumns->get('last_ip')} = ?, ";
+
+            if (!empty($userColumns->get('last_login')))
+                $sql .= "{$userColumns->get('last_login')} = NOW(), ";
+
+            if (!empty($userColumns->get('updated_at')))
+                $sql .= "{$userColumns->get('updated_at')} = NOW(), ";
+
+            $sql = rtrim($sql,",");
+            $sql .= " WHERE {$idColumn} = ?";
+
             $sth = $loginAthenaGroup->connection->getStatement($sql);
             $sth->execute(array($_SERVER['REMOTE_ADDR'], $row->$idColumn));
 
@@ -200,7 +212,8 @@ class Flux_MasterSessionData extends Flux_SessionData {
         $usersTable = Flux::config('FluxTables.MasterUserTable');
         $userColumns = Flux::config('FluxTables.MasterUserTableColumns');
 
-        $sql  = "SELECT *, {$userColumns->get('email')} as userid FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} ";
+        $sql  = "SELECT *, {$userColumns->get('id')} as id, {$userColumns->get('email')} as userid ";
+        $sql .= "FROM {$loginAthenaGroup->loginDatabase}.{$usersTable} ";
         $sql .= "WHERE {$userColumns->get('group_id')} >= 0 AND {$userColumns->get('email')} = ? LIMIT 1";
         $smt  = $loginAthenaGroup->connection->getStatement($sql);
         $res  = $smt->execute(array($email));

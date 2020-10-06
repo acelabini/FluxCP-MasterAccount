@@ -3,7 +3,7 @@ if (!defined('FLUX_ROOT')) exit;
 
 $this->loginRequired();
 if (!Flux::config('MasterAccount')) {
-    $this->redirect();
+    $this->deny();
 }
 $title = Flux::message('AccountViewTitle');
 

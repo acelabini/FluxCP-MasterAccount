@@ -5,7 +5,7 @@ $this->loginRequired();
 
 $title = 'List Master Accounts';
 if (!Flux::config('MasterAccount')) {
-    $this->redirect();
+    $this->deny();
 }
 
 $usersTable = Flux::config('FluxTables.MasterUserTable');

@@ -2,7 +2,7 @@
 // This is the application configuration file. All values have been set to
 // the default, and should be changed as needed.
 return array(
-	'ServerAddress'				=> 'http://localhost/',				// This value is the hostname:port under which Flux runs. (e.g., example.com or example.com:80)
+	'ServerAddress'				=> 'flux.test',				// This value is the hostname:port under which Flux runs. (e.g., example.com or example.com:80)
 	'BaseURI'					=> '',						// The base URI is the base web root on which your application lies.
 	'InstallerPassword'			=> 'secetpassword',			// Installer/updater password.
 	'RequireOwnership'			=> true,					// Require the executing user to be owner of the FLUX_ROOT/data/ directory tree? (Better for security)
@@ -55,7 +55,7 @@ return array(
 	'MasterAccount'				=> true,                   // Enable master account feature
 	'MasterAccountPasswordHash'=> 'bcrypt',               // Master account password hashing algorithm
 	'MasterAccountMaxAccounts' => 0,						// Maximum game account per master account; 0 to disable
-	'RequireEmailConfirm'		=> false,					// Require e-mail confirmation during registration.
+	'RequireEmailConfirm'		=> true,					// Require e-mail confirmation during registration.
 	'RequireChangeConfirm'		=> false,					// Require confirmation when changing e-mail addresses.
 	'EmailConfirmExpire'		=> 48,						// E-mail confirmations expire hours. Unconfirmed accounts will expire after this period of time.
 	'PincodeEnabled'			=> true,					// Whether or not the pincode system is enabled in your server. (Check your char_athena.conf file. Enabled by default.)
@@ -148,7 +148,7 @@ return array(
 	'ShopImageExtensions'		=> array(					// These are the image extensions allowed for uploading in the item shop.
 		'png', 'jpg', 'gif', 'bmp', 'jpeg'
 	),
-	'NoResetPassGroupLevel'		=> AccountLevel::LOWGM,		// Minimum group level of account to prevent password reset using control panel.
+	'NoResetPassGroupLevel'		=> AccountLevel::NOONE,		// Minimum group level of account to prevent password reset using control panel.
 
 	'CharRankingLimit'			=> 20,						//
 	'GuildRankingLimit'			=> 20,						//
@@ -325,7 +325,8 @@ return array(
 		'master' 		=> array (
 			'index'			=>	'List Master Accounts',
 			'view'			=>	'Account Info',
-			'create'		=>	'Create Account'
+			'create'		=>	'Create Account',
+			'changepass'	=>	'Change Password',
 		),
 		'guild'			=> array(
 			'index'			=> 'List Guilds',

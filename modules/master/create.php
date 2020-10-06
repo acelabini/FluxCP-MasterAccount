@@ -7,7 +7,7 @@ if (Flux::config('UseCaptcha') && Flux::config('EnableReCaptcha')) {
 }
 
 if (!Flux::config('MasterAccount')) {
-    $this->redirect();
+    $this->deny();
 }
 
 $title = Flux::message('AccountCreateTitle');
@@ -15,7 +15,7 @@ $title = Flux::message('AccountCreateTitle');
 $serverNames = $this->getServerNames();
 
 if (!$session->account) {
-    $this->redirect();
+    $this->deny();
 }
 
 $maxGameAccount = Flux::config('MasterAccountMaxAccounts');

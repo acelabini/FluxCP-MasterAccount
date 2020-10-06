@@ -1,6 +1,10 @@
 <?php
 if (!defined('FLUX_ROOT')) exit;
 
+if (!Flux::config('MasterAccount')) {
+    $this->deny();
+}
+
 try {
     $serverGroupName = $params->get('server');
     $name      = $params->get('name');
@@ -27,7 +31,7 @@ try {
             $mail = new Flux_Mailer();
             $sent = $mail->send(
                 $email,
-                'Account Confirmation',
+                'Master Account Confirmation',
                 'confirm',
                 array('AccountUsername' => $email, 'ConfirmationLink' => htmlspecialchars($link)));
 
@@ -36,7 +40,7 @@ try {
 
             // Insert confirmation code.
             $sql  = "UPDATE {$server->loginDatabase}.{$usersTable} SET ";
-            $sql .= "confirm_code = ?, confirmed = 0 ";
+            $sql .= "confirm_code = ? ";
             if ($expire=Flux::config('EmailConfirmExpire')) {
                 $sql .= ", confirm_expire = ? ";
                 $bind[] = date('Y-m-d H:i:s', time() + (60 * 60 * $expire));

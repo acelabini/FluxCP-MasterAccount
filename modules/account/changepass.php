@@ -9,11 +9,11 @@ $accountID = $params->get('id');
 $account = $session->account;
 
 if (!$accountID && Flux::config('MasterAccount')) {
-	$this->redirect();
+	$this->deny();
 }
 if ($accountID && Flux::config('MasterAccount')) {
 	if (!($account = $session->loginServer->getGameAccount($account->id, $accountID))) {
-		$this->redirect();
+		$this->deny();
 	}
 }
 

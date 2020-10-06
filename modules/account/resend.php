@@ -10,14 +10,15 @@ if (count($_POST)) {
 	$userid    = $params->get('userid');
 	$email     = $params->get('email');
 	$groupName = $params->get('login');
-	
-	if (!$userid) {
+
+	if (!Flux::config('MasterAccount') && !$userid) {
 		$errorMessage = Flux::message('ResendEnterUsername');
 	}
 	elseif (!$email) {
 		$errorMessage = Flux::message('ResendEnterEmail');
 	}
-	elseif (preg_match('/[^' . Flux::config('UsernameAllowedChars') . ']/', $userid)) {
+	elseif (!Flux::config('MasterAccount') &&
+		preg_match('/[^' . Flux::config('UsernameAllowedChars') . ']/', $userid)) {
 		$errorMessage = sprintf(Flux::message('AccountInvalidChars'), Flux::config('UsernameAllowedChars'));
 	}
 	elseif (!preg_match('/^(.+?)@(.+?)$/', $email)) {
@@ -28,19 +29,32 @@ if (count($_POST)) {
 			$loginAthenaGroup = $session->loginAthenaGroup;
 		}
 
-		$sql  = "SELECT confirm_code FROM {$loginAthenaGroup->loginDatabase}.$createTable WHERE ";
-		$sql .= "userid = ? AND email = ? AND confirmed = 0 AND confirm_expire > NOW() LIMIT 1";
-		$sth  = $loginAthenaGroup->connection->getStatement($sql);
-		$sth->execute(array($userid, $email));
+		if (Flux::config('MasterAccount')) {
+			$usersTable = Flux::config('FluxTables.MasterUserTable');
+			$userColumns = Flux::config('FluxTables.MasterUserTableColumns');
+			$subject = 'Master Account Confirmation';
+			$userid = $email;
 
-		$row  = $sth->fetch();
+			$sql = "SELECT confirm_code FROM {$loginAthenaGroup->loginDatabase}.$usersTable WHERE ";
+			$sql .= "{$userColumns->get('email')} = ? AND confirmed_date IS NULL AND confirm_expire > NOW() LIMIT 1";
+			$sth = $loginAthenaGroup->connection->getStatement($sql);
+			$sth->execute(array($email));
+		} else {
+			$subject = 'Account Confirmation';
+			$sql = "SELECT confirm_code FROM {$loginAthenaGroup->loginDatabase}.$createTable WHERE ";
+			$sql .= "userid = ? AND email = ? AND confirmed = 0 AND confirm_expire > NOW() LIMIT 1";
+			$sth = $loginAthenaGroup->connection->getStatement($sql);
+			$sth->execute(array($userid, $email));
+		}
+
+		$row = $sth->fetch();
 		if ($row) {
 			require_once 'Flux/Mailer.php';
 			$code = $row->confirm_code;
 			$name = $loginAthenaGroup->serverName;
 			$link = $this->url('account', 'confirm', array('_host' => true, 'code' => $code, 'user' => $userid, 'login' => $name));
 			$mail = new Flux_Mailer();
-			$sent = $mail->send($email, 'Account Confirmation', 'confirm', array('AccountUsername' => $userid, 'ConfirmationLink' => htmlspecialchars($link)));
+			$sent = $mail->send($email, $subject, 'confirm', array('AccountUsername' => $userid, 'ConfirmationLink' => htmlspecialchars($link)));
 		}
 
 		if (empty($sent)) {
